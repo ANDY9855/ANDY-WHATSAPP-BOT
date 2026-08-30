@@ -1,0 +1,9 @@
+# Attached plan analysis
+
+The attached nine-page blueprint defines a local-only, $0-first, lightweight Baileys bot for older hardware. Its central principles are one Node process, local storage, plugin isolation, centralized API traffic, temporary media retention, local-only dashboard access, trusted users/groups, layered rate limiting, FFmpeg processing, structured logs, backups, and graceful degradation when third-party APIs fail.
+
+The plan lists these core areas: WhatsApp connection and reconnection; command parser with aliases/help; plugin manager; local database for users, groups, settings, permissions, and usage; local dashboard; trusted people/groups; AntiDelete with configurable exclusions and retention; command-controlled AntiViewOnce; media/FFmpeg pipeline; free API integrations; global/per-user/per-command limits; queueing; usage counters; local logs; retention cleanup; and hardening/backup/testing.
+
+The current implementation already uses Baileys, TypeScript, MariaDB, QR/session persistence, basic command parsing, AntiDelete capture and revoke forwarding, `.vv`, a catalog-wide configurable API adapter layer, reconnect handling, structured logs, health endpoints, rate limiting, backup script, and basic tests.
+
+The main gaps against the plan are: no plugin registry; no dashboard; no persistent users/groups/trusted-list/settings/usage tables or dashboard controls; rate limiting is in-memory rather than database-backed and does not provide a queue; no FFmpeg pipeline; no complete API-specific payload adapters for multipart/authenticated endpoints; no storage telemetry; no automated media cleanup scheduler; limited integration tests; no explicit backup restore test; and no full configuration validation. These gaps will be addressed with a lightweight local architecture compatible with the stated older laptop constraints.

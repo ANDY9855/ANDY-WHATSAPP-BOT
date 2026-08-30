@@ -1,0 +1,23 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+
+# Environment & secrets (never commit)
+.env
+.env.local
+*.env.local
+
+# WhatsApp auth sessions (never commit)
+auth_info/
+auth_info_baileys/
+
+# Runtime data & logs
+logs/
+downloads/
+data/
+*.log
+
+# Personal / local files
+user.json
