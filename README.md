@@ -126,4 +126,4 @@ bot/
 
 ## License
 
-MIT
+Released under the [MIT License](LICENSE). See [CONTRIBUTING.md](CONTRIBUTING.md) if you'd like to help.
