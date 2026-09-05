@@ -1,129 +1,367 @@
-# WhatsApp Bot Monorepo
+<div align="center">
 
-Local-first WhatsApp automation built on top of [Baileys](https://github.com/WhiskeySockets/Baileys) (unofficial WhatsApp Web protocol). This repository contains two generations of the same bot:
+# WHATSAPP BOT MONOREPO
 
-| Version | Status | Stack | Highlights |
-|---------|--------|-------|------------|
-| **V-1** | Stable | Node.js + JavaScript (ESM) | 25+ commands, AI chat, image gen, downloads, web tools |
-| **V-2** | Under development | Node.js + TypeScript | Anti-delete capture, view-once recovery, MariaDB, local dashboard |
+**Local-First, Multi-Generational WhatsApp Automation Framework**
 
-Both bots are designed to run **entirely on your own machine** and communicate with WhatsApp through the Web protocol. They do not depend on any managed or third-party cloud API.
+[![Node Version](https://img.shields.io/badge/Node.js-%E2%89%8520.0.0-339933?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![JavaScript](https://img.shields.io/badge/JavaScript-ESM-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
+[![Protocol](https://img.shields.io/badge/Protocol-Baileys_v6-25D366?style=for-the-badge&logo=whatsapp&logoColor=white)](https://github.com/WhiskeySockets/Baileys)
+[![Database](https://img.shields.io/badge/Database-MariaDB_10.4+-003545?style=for-the-badge&logo=mariadb&logoColor=white)](https://mariadb.org/)
+[![License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)](LICENSE)
+
+</div>
 
 ---
 
-## Quick Start
+## TABLE OF CONTENTS
 
-Requirements for both versions: **Node.js ≥ 20** (V-1 needs ≥ 18), and WhatsApp access to scan a QR code. V-2 additionally needs **MariaDB** (XAMPP works).
+- [Overview](#overview)
+- [Architectural Comparison: V-1 vs V-2](#architectural-comparison-v-1-vs-v-2)
+- [System Architecture](#system-architecture)
+- [Quick Start Guide](#quick-start-guide)
+  - [Prerequisites](#prerequisites)
+  - [Version 1 Installation](#version-1-installation)
+  - [Version 2 Installation](#version-2-installation)
+- [Configuration & Environment Specifications](#configuration--environment-specifications)
+- [Interactive Command Matrix](#interactive-command-matrix)
+  - [V-1 Command Suite](#v-1-command-suite)
+  - [V-2 Command Suite](#v-2-command-suite)
+- [Local Operations & Dashboard (V-2)](#local-operations--dashboard-v-2)
+- [Security & Data Privacy Directives](#security--data-privacy-directives)
+- [Troubleshooting & Diagnostics](#troubleshooting--diagnostics)
+- [Contributing & License](#contributing--license)
+
+---
+
+## OVERVIEW
+
+This repository houses a local-first monorepo containing two iterations of an automated WhatsApp communication bot built on top of the [Baileys](https://github.com/WhiskeySockets/Baileys) web protocol implementation.
+
+Both bot versions run **100% locally on your machine**, eliminating third-party cloud dependencies, subscription APIs, or hosted middleware. All message processing, database storage, session persistence, and media conversions execute locally.
+
+### KEY HIGHLIGHTS
+
+- **Zero Cloud Lock-in**: Autonomous operation via direct WhatsApp Web socket connections.
+- **Privacy Core**: Session storage, auth keys, and database payloads remain exclusively on host hardware.
+- **Dual-Generation Engine**: Access both the stable JavaScript production bot (V-1) and the high-throughput TypeScript engine (V-2).
+- **Configurable Backend Routing**: Extensible REST API adapter layer mapping commands to custom local or remote backends.
+
+---
+
+## ARCHITECTURAL COMPARISON: V-1 VS V-2
+
+| Feature / Dimension | Version 1 (V-1) | Version 2 (V-2) |
+| :--- | :--- | :--- |
+| **Development Status** | Stable Production | Active Development |
+| **Primary Language** | JavaScript (ES Modules) | TypeScript (Strict Mode) |
+| **Runtime Requirements** | Node.js >= 18 | Node.js >= 20 |
+| **Persistence Layer** | File System (JSON / Pino Logs) | MariaDB / MySQL Relational Schema |
+| **Anti-Delete Capture** | Not Supported | Always-on local message capture & owner alert |
+| **View-Once Recovery** | Not Supported | Quoted media extraction via `.vv` |
+| **Operations Dashboard** | Console / Pino Logs | Local HTTP REST API (Port 8787/8788) |
+| **Concurrency Engine** | `p-queue` Rate Limiter | Distributed Queue + Database Audit Logs |
+| **API Adapter System** | Direct API Integrations | Centralized `src/api.ts` Modular Adapters |
+
+---
+
+## SYSTEM ARCHITECTURE
+
+```
++-----------------------------------------------------------------------+
+|                        WHATSAPP NETWORK (WEBSOCKET)                   |
++-----------------------------------------------------------------------+
+                                   |
+                                   v
++-----------------------------------------------------------------------+
+|                        BAILEYS SOCKET CONNECTION                      |
+|          Multi-File Auth State (auth_info / auth_info_baileys)        |
++-----------------------------------------------------------------------+
+                                   |
+                +------------------+------------------+
+                |                                     |
+                v                                     v
++-------------------------------+   +----------------------------------+
+|      V-1 ENGINE (JAVASCRIPT)  |   |     V-2 ENGINE (TYPESCRIPT)      |
+|  - Router & Fuzzy Matching    |   |  - Anti-Delete Event Interceptor |
+|  - Rate Limiter (5 req/10s)   |   |  - View-Once Recovery (.vv)      |
+|  - Direct Groq / DDGS / yt-dlp|   |  - MariaDB Storage Engine        |
+|  - Image Watermark (Sharp)    |   |  - Local REST Dashboard (8788)   |
++-------------------------------+   +----------------------------------+
+                |                                     |
+                +------------------+------------------+
+                                   |
+                                   v
++-----------------------------------------------------------------------+
+|                    CONFIGURABLE LOCAL API BACKEND                     |
+|                      (Default: http://127.0.0.1:3000)                 |
++-----------------------------------------------------------------------+
+```
+
+---
+
+## QUICK START GUIDE
+
+### PREREQUISITES
+
+1. **Node.js**: Version 18+ for V-1, Version 20+ for V-2.
+2. **WhatsApp Account**: A active mobile device ready to link via QR code scan.
+3. **MariaDB / MySQL**: Required for V-2 (XAMPP / local MariaDB server listening on port 3306).
+4. **yt-dlp & ffmpeg**: Optional binaries for media download capabilities.
+
+---
+
+### VERSION 1 INSTALLATION
+
+<details>
+<summary><b>Click to expand V-1 Setup Commands</b></summary>
 
 ```bash
-# V-1 (stable)
+# Navigate to V-1 directory
 cd V-1
+
+# Install package dependencies
 npm install
-cp .env.example .env        # fill in your own keys
+
+# Copy environment configuration
+cp .env.example .env
+
+# Edit .env and supply your Groq API key and local preferences
+# nano .env OR code .env
+
+# Launch bot in production mode
 npm start
 
-# V-2 (in development)
+# For development mode with auto-reload (Node >= 18)
+npm run dev
+```
+
+</details>
+
+---
+
+### VERSION 2 INSTALLATION
+
+<details>
+<summary><b>Click to expand V-2 Setup Commands</b></summary>
+
+```bash
+# Ensure MariaDB is running (e.g., via XAMPP)
+# Import database schema:
+# mysql -u root -p < V-2/sql/schema.sql
+
+# Navigate to V-2 directory
 cd V-2
-cp .env.example .env        # fill in DB + own keys
+
+# Copy environment configuration
+cp .env.example .env
+
+# Install dependencies
 npm install
+
+# Build TypeScript source code
 npm run build
+
+# Run deterministic unit tests
+npm test
+
+# Launch production process
 npm start
 ```
 
-On first start a **QR code** is printed in the terminal. Open WhatsApp on your phone → **Linked Devices** → **Link a Device** → scan it. The session persists locally (V-1: `auth_info_baileys/`, V-2: `auth_info/`).
-
-> **Group / chat safety:** Baileys is not an official WhatsApp API. Use it only with accounts you control and with the consent of participants, and in line with WhatsApp's terms and applicable law.
+</details>
 
 ---
 
-## Security & Keys
+## CONFIGURATION & ENVIRONMENT SPECIFICATIONS
 
-- **Never share or commit API keys.** The bots already ship without any bundled keys — all credentials come from your own local `.env` file, which is git-ignored.
-- The generated WhatsApp auth folders (`auth_info_baileys/`, `auth_info/`) contain your logged-in session. Keep them private and never push them to a repository.
-- V-2's dashboard/health ports bind to `127.0.0.1` only and require a `DASHBOARD_TOKEN` in production. Do not port-forward them publicly.
+<details>
+<summary><b>V-1 Environment Variables Table (.env)</b></summary>
 
----
+| Key | Default Value | Description |
+| :--- | :--- | :--- |
+| `GROQ_API_KEY` | `""` | **Required**. API Key for Groq LLaMA 3.3 70B AI processing. |
+| `BOT_PREFIX` | `.` | Command prefix for public users. |
+| `SELF_PREFIX` | `!!` | Command prefix reserved for bot owner. |
+| `API_BASE_URL` | `http://127.0.0.1:3000` | Base URL for self-hosted API backend adapters. |
+| `SESSION_DIR` | `./auth_info_baileys` | Directory for storing WhatsApp session state. |
+| `SIGNATURE` | `> BOT_404` | Footer appended to outgoing bot messages. |
+| `MAX_CONCURRENT` | `5` | Maximum parallel command execution instances. |
+| `LOG_LEVEL` | `info` | Logging verbosity (`debug`, `info`, `warn`, `error`). |
+| `DOWNLOAD_MAX_MB` | `50` | Maximum allowed media download size in megabytes. |
 
-## Configuration
+</details>
 
-Every external service a command uses must be configured by you in local `.env`. Nothing is hardcoded to a remote server.
+<details>
+<summary><b>V-2 Environment Variables Table (.env)</b></summary>
 
-### V-1
+| Key | Default Value | Description |
+| :--- | :--- | :--- |
+| `DB_HOST` | `127.0.0.1` | MariaDB server host address. |
+| `DB_PORT` | `3306` | MariaDB server port. |
+| `DB_USER` | `root` | MariaDB database username. |
+| `DB_PASSWORD` | `""` | MariaDB database password. |
+| `DB_NAME` | `bot_404` | Target MariaDB database schema name. |
+| `OWNER_NUMBER` | `""` | Target WhatsApp ID (`1234567890@s.whatsapp.net`) for anti-delete alerts. |
+| `API_BASE_URL` | `http://127.0.0.1:3000` | Base URL for API service adapters. |
+| `DASHBOARD_TOKEN` | `""` | Bearer token required for localhost ops API in production. |
+| `MEDIA_DIR` | `./data/media` | Disk path for retained view-once and anti-delete media files. |
 
-Key variables (full table in [`V-1/README.md`](V-1/README.md)):
-
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `GROQ_API_KEY` | — | Your own Groq key for `.aibot` (get one at console.groq.com) |
-| `API_BASE_URL` | `http://127.0.0.1:3000` | Base URL of the local/self-hosted API that powers most commands |
-| `BOT_PREFIX` | `.` | Command prefix for regular users |
-| `SELF_PREFIX` | `!!` | Command prefix for the bot owner |
-| `SIGNATURE` | `> BOT_404` | Footer appended to outgoing messages |
-
-Most commands route through the configurable API backend. `aibot` calls Groq directly, `search` uses DuckDuckGo, and `dl`/`audio` use a local `yt-dlp`.
-
-### V-2
-
-Key variables (full list in [`V-2/.env.example`](V-2/.env.example)):
-
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `DB_HOST` / `DB_PORT` | `127.0.0.1` / `3306` | Local MariaDB connection |
-| `OWNER_NUMBER` | — | WhatsApp number that receives anti-delete/`.vv` recoveries |
-| `API_BASE_URL` | `http://127.0.0.1:3000` | Base URL of the local/self-hosted API backend |
-| `DASHBOARD_TOKEN` | — | Bearer token for the local operations API (required in production) |
-| `MEDIA_DIR` | `./data/media` | Where quoted view-once media is stored locally |
+</details>
 
 ---
 
-## V-1 — Stable bot
+## INTERACTIVE COMMAND MATRIX
 
-JavaScript bot with 25+ commands across categories: AI chat/vision, image generation, media downloading (YouTube, TikTok, Instagram, and more via the API backend, plus local `yt-dlp`), TTS, website screenshot/zip/PDF tools, manga/novel readers, movie & medicine search, disposable email, n8n templates, and course listings.
+### V-1 COMMAND SUITE
 
-Notable built-in safety features:
+<details>
+<summary><b>Artificial Intelligence & Vision (Click to Expand)</b></summary>
 
-- Rate limiting (max 5 commands per 10 s per user) and fuzzy command matching
-- Configurable concurrency queue and automatic reconnection with backoff
-- Message signing (signature footer) and image watermarking
-- Dual prefix: owner commands via `!!`, user commands via `.`
+| Command | Usage | Description |
+| :--- | :--- | :--- |
+| `.aibot` | `.aibot <prompt>` | Conversational AI using Groq LLaMA 3.3 70B model. |
+| `.vision` | Reply to image + `.vision <prompt>` | Multimodal image understanding and analysis. |
+| `.img` | `.img <prompt>` | Text-to-image generation supporting bulk generation up to 50 items. |
+| `.i2i` | Reply to image + `.i2i <prompt>` | Image-to-image AI style transformation. |
 
-Setup and command reference: [`V-1/README.md`](V-1/README.md).
+</details>
+
+<details>
+<summary><b>Media & Content Downloader (Click to Expand)</b></summary>
+
+| Command | Usage | Description |
+| :--- | :--- | :--- |
+| `.dl` | `.dl <video_url>` | Downloads MP4 video using local `yt-dlp` binary. |
+| `.audio` | `.audio <url>` | Extracts MP3 audio using local `yt-dlp` binary. |
+| `.alldl` | `.alldl <url>` | Universal media downloader (YouTube, TikTok, Instagram, FB, Reddit, X). |
+| `.tts` | `.tts <text>` | Converts text into audio speech file. |
+| `.voices` | `.voices` | Lists all available TTS voice options. |
+
+</details>
+
+<details>
+<summary><b>Web Tools & Utilities (Click to Expand)</b></summary>
+
+| Command | Usage | Description |
+| :--- | :--- | :--- |
+| `.screenshot` | `.screenshot <url>` | Captures website webpage screenshot (PNG or PDF format). |
+| `.zip` | `.zip <url>` | Archives website assets into downloadable ZIP container. |
+| `.wikipdf` | `.wikipdf <article>` | Compiles Wikipedia article into standard PDF document. |
+| `.cert` | `.cert <name> <type>` | Generates custom PDF certificates (8 templates supported). |
+| `.search` | `.search <query>` | Fetches web search results from DuckDuckGo search API. |
+
+</details>
+
+<details>
+<summary><b>Reader Services & Entertainment (Click to Expand)</b></summary>
+
+| Command | Usage | Description |
+| :--- | :--- | :--- |
+| `.manga` | `.manga <query>` | Interactive Manga browser, chapter index, and reader. |
+| `.novel` | `.novel <query>` | Light novel database browser with English/Urdu translation support. |
+| `.unovel` | `.unovel <query>` | Specialized Urdu novels library and catalog reader. |
+| `.movie` | `.movie <title>` | Movie and TV series metadata, poster, cast, and IMDB rating. |
+| `.med` | `.med <medicine_name>` | Pharmaceutical info lookup (dosage, interactions, market pricing). |
+| `.courses` | `.courses <topic>` | Searches available free online education courses and materials. |
+
+</details>
+
+<details>
+<summary><b>System & Mail Tools (Click to Expand)</b></summary>
+
+| Command | Usage | Description |
+| :--- | :--- | :--- |
+| `.menu` | `.menu` | Displays categorized command overview menu. |
+| `.ping` | `.ping` | Evaluates bot execution latency and health response. |
+| `.mail` | `.mail [create|inbox|read]` | Disposable inbox generator, mail viewer, and cleaner. |
+| `.n8n` | `.n8n <query>` | Explores n8n workflow templates filtered by complexity or trigger. |
+
+</details>
 
 ---
 
-## V-2 — Next-generation (under development)
+### V-2 COMMAND SUITE
 
-TypeScript rewrite currently in active development. It keeps the V-1 command surface and adds a local-first infrastructure layer:
+<details>
+<summary><b>Core Commands & Recovery Tools (Click to Expand)</b></summary>
 
-- **Always-on anti-delete capture** — incoming messages and media are stored locally (MariaDB + disk); when a revoke event arrives the bot forwards a recovery notice with the stored content to the configured owner.
-- **View-once recovery** — quoting a received view-once message with `.vv` returns a normal downloadable copy.
-- **Local database** — MariaDB schema (in `sql/schema.sql`) for messages, retention (30 days default), trusted entities, usage, and audit logs.
-- **Local ops dashboard** — health and status endpoints bound to `127.0.0.1` (health on `:8787`, operations API on `:8788`), with token-protected trusted-entity management.
-- **Centralized API adapter layer** — all remote commands go through one configurable adapter module (`src/api.ts`); no provider URL is hardcoded.
+| Command | Usage | Description |
+| :--- | :--- | :--- |
+| `.help` / `.menu` | `.help` | Displays current V-2 platform options. |
+| `.vv` | Reply to view-once media + `.vv` | Intercepts view-once image/video/audio and converts it to a standard file. |
+| `.antidelete` | `.antidelete [on|off]` | Status inspector for anti-delete subsystem (permanently enabled). |
+| `.tts` | `.tts <text>` | Synthesizes speech using API adapter layer. |
+| `.dl` | `.dl <url>` | Invokes AllDL adapter for remote media link processing. |
+| `.screenshot` | `.screenshot <url>` | Captures website screenshot via WebSnap API module. |
+| `.imgchat` | `.imgchat <prompt>` | Triggers VisionSter adapter image analysis workflow. |
+| `.hand` | `.hand <text>` | Converts input text into handwritten manuscript image. |
 
-Status: several commands are wired to the API adapter and may be disabled until the local backend is finalized. Setup and details: [`V-2/README.md`](V-2/README.md).
+</details>
 
 ---
 
-## Repository Layout
+## LOCAL OPERATIONS & DASHBOARD (V-2)
 
+Version 2 includes a background management service bound strictly to local loopback interface (`127.0.0.1`):
+
+- **Health Endpoint**: `GET http://127.0.0.1:8787/health`
+- **Operations Endpoint**: `GET http://127.0.0.1:8788/api/status`
+- **Trusted Entity Control**: `POST http://127.0.0.1:8788/api/trusted`
+
+### PRODUCTION DEPLOYMENT WITH PM2
+
+To ensure continuous uptime and process restart supervision in production environments:
+
+```bash
+cd V-2
+npm run build
+pm2 start ecosystem.config.cjs
 ```
-bot/
-├── README.md              # This file
-├── V-1/                   # Stable JavaScript bot
-│   ├── index.js           # Entry point
-│   ├── src/               # Core modules + src/commands/* command handlers
-│   ├── API_Documentation.md  # Reference for the configurable API backend
-│   └── README.md
-└── V-2/                   # TypeScript rewrite (in development)
-    ├── src/               # whatsapp, db, api adapter, commands, ops, dashboard
-    ├── sql/schema.sql     # MariaDB schema
-    ├── test/              # Unit tests
-    └── README.md
-```
 
 ---
 
-## License
+## SECURITY & DATA PRIVACY DIRECTIVES
 
-Released under the [MIT License](LICENSE). See [CONTRIBUTING.md](CONTRIBUTING.md) if you'd like to help.
+1. **Authentication Credentials**: Never share or push files within `auth_info/` or `auth_info_baileys/`. These contain raw cryptographic keys providing full access to your linked WhatsApp account.
+2. **Environment Protection**: Ensure `.env` is listed in your `.gitignore` file before committing changes.
+3. **Local Scope Bounding**: Keep health ports (`8787`, `8788`) bound strictly to `127.0.0.1`. Do not expose these ports over public port-forwarding or reverse proxies without strong bearer tokens.
+4. **Terms Compliance**: Use this automation framework strictly in accordance with applicable laws, chat participant consent, and WhatsApp Service Terms.
+
+---
+
+## TROUBLESHOOTING & DIAGNOSTICS
+
+<details>
+<summary><b>Issue: QR Code Fails to Render or Scan</b></summary>
+
+- Expand terminal window width to prevent ASCII QR wrap-around errors.
+- Delete existing session folder (`rm -rf V-1/auth_info_baileys` or `rm -rf V-2/auth_info`) and restart the bot process to generate a fresh QR code.
+
+</details>
+
+<details>
+<summary><b>Issue: MariaDB Connection Errors (V-2)</b></summary>
+
+- Verify XAMPP or local MariaDB server status on port 3306.
+- Ensure `sql/schema.sql` was executed successfully against database `bot_404`.
+- Validate user credentials in `V-2/.env`.
+
+</details>
+
+<details>
+<summary><b>Issue: API Backend HTTP 403 / 405 Errors</b></summary>
+
+- Ensure `API_BASE_URL` in `.env` points to a reachable, active backend service.
+- Endpoints protected by anti-bot checks or WAFs require verification from your host network.
+
+</details>
+
+---
+
+## CONTRIBUTING & LICENSE
+
+Contributions are welcomed. Please review [CONTRIBUTING.md](CONTRIBUTING.md) for contribution guidelines, architecture conventions, and submission checklists.
+
+This project is open-source software licensed under the [MIT License](LICENSE).
