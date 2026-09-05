@@ -1,60 +1,152 @@
-# Contributing
+# CONTRIBUTING TO WHATSAPP BOT MONOREPO
 
-Thanks for your interest in the WhatsApp bot project. Contributions of all kinds are welcome — code, bug reports, docs, and ideas.
+Thank you for your interest in contributing to this project. We welcome contributions of all types including feature additions, bug fixes, performance optimizations, documentation improvements, and architectural suggestions.
 
-## Before you start
+---
 
-- This repo is **local-first**. There are no hosted services and no bundled API keys. Everything must run on your own machine.
-- **Never commit secrets.** Do not commit `.env` files, API keys, WhatsApp auth sessions (`auth_info*`), or personal contact data. `.gitignore` already excludes these — keep it that way.
-- If you are adding a new command that talks to a remote service, it must go through the configurable API layer (`API_BASE_URL`) — no hardcoded remote URLs.
+## TABLE OF CONTENTS
 
-## Getting started
+- [Core Principles](#core-principles)
+- [Getting Started](#getting-started)
+- [Development Workflow](#development-workflow)
+- [Submitting Pull Requests](#submitting-pull-requests)
+- [Coding Standards & Conventions](#coding-standards--conventions)
+- [Testing Standards](#testing-standards)
+- [Reporting Issues](#reporting-issues)
+- [Code of Conduct](#code-of-conduct)
 
-1. Fork the repo and clone your fork.
-2. Install dependencies:
+---
+
+## CORE PRINCIPLES
+
+1. **Local-First Infrastructure**: All features must function locally without mandatory cloud server dependencies or external SaaS subscriptions.
+2. **Zero Hardcoded Secrets**: Secrets, keys, and session data must reside in `.env` or local files. Never commit `.env`, `auth_info/`, `auth_info_baileys/`, or sensitive credentials.
+3. **Configurable Adapter Layer**: Remote command integration must route through the configurable `API_BASE_URL` adapter layer rather than hardcoded URLs.
+4. **Zero Emoji Directive**: Maintain professional, clean documentation and code comments without emojis across all project files.
+
+---
+
+## GETTING STARTED
+
+### 1. Fork & Clone
+
+Fork the repository on GitHub and clone your fork locally:
+
+```bash
+git clone https://github.com/YOUR_USERNAME/whatsapp-bot.git
+cd whatsapp-bot
+```
+
+### 2. Environment Setup
+
+#### Setting up Version 1 (JavaScript)
+
+```bash
+cd V-1
+npm install
+cp .env.example .env
+# Edit .env with your local parameters
+```
+
+#### Setting up Version 2 (TypeScript)
+
+```bash
+cd V-2
+npm install
+cp .env.example .env
+# Ensure MariaDB server is active on localhost:3306 and import schema:
+# mysql -u root -p < sql/schema.sql
+```
+
+---
+
+## DEVELOPMENT WORKFLOW
+
+### Branching Strategy
+
+Create a descriptive feature or bugfix branch off the primary branch:
+
+```bash
+git checkout -b feature/your-feature-name
+# OR
+git checkout -b fix/your-bugfix-name
+```
+
+### Building & Verification
+
+For Version 1:
+Verify syntax check on modified JavaScript files:
+
+```bash
+node --check index.js
+node --check src/router.js
+```
+
+For Version 2:
+Build TypeScript and run linter:
+
+```bash
+cd V-2
+npm run build
+npm run lint
+```
+
+---
+
+## SUBMITTING PULL REQUESTS
+
+1. Push your branch to your GitHub fork:
 
    ```bash
-   # V-1 (stable, JavaScript)
-   cd V-1
-   npm install
-   cp .env.example .env       # add your own keys
-
-   # V-2 (TypeScript, in development)
-   cd V-2
-   npm install
-   cp .env.example .env       # needs MariaDB (XAMPP) on 127.0.0.1:3306
+   git push origin feature/your-feature-name
    ```
 
-3. Create a branch for your work: `git checkout -b my-feature`.
+2. Open a Pull Request against the main branch.
+3. Provide a clear summary of changes in the PR description:
+   - What problem does this PR solve?
+   - What changes were made?
+   - How was this change tested locally?
+4. Ensure CI/CD build checks and unit tests pass without errors.
 
-## Making changes
+---
 
-- Keep changes focused and small; one feature or fix per PR is best.
-- Match the existing style of the file you are editing.
-- For V-2, make sure it still builds: `npm run build` and `npm run lint`.
-- For V-1, verify your files parse: `node --check <file>`.
+## CODING STANDARDS & CONVENTIONS
 
-## Testing
+### JavaScript (V-1)
+- Standard ES Modules (`import`/`export`) syntax.
+- Async/await over raw Promises for readability.
+- Pino logging for operational events instead of `console.log`.
 
-V-2 ships unit tests:
+### TypeScript (V-2)
+- Strict mode compilation (`tsconfig.json`).
+- Explicit type declarations for function signatures and API parameters.
+- Modular adapter pattern in `src/api.ts` for all external REST requests.
+
+---
+
+## TESTING STANDARDS
+
+Version 2 ships with deterministic unit tests located in `V-2/test/`:
 
 ```bash
 cd V-2
 npm test
 ```
 
-Please add or update tests for any behavior you change.
+When implementing new features or fixing bugs in V-2, write corresponding unit tests in `V-2/test/` to prevent regressions.
 
-## Opening a pull request
+---
 
-1. Push your branch to your fork.
-2. Open a PR against `main` and describe what you changed and why.
-3. Make sure CI/build checks pass and no secrets are included in the diff.
+## REPORTING ISSUES
 
-## Reporting issues
+When filing an issue, please include:
+- Bot version affected (V-1 or V-2).
+- Operating system and Node.js version (`node -v`).
+- Minimal reproduction steps.
+- Sanitized log output (remove phone numbers, auth tokens, and API keys before posting).
 
-Include the bot version, the command that failed, and any relevant log output (trim anything sensitive before pasting).
+---
 
-## Code of conduct
+## CODE OF CONDUCT
 
-Be respectful and constructive. Harassment and spam will not be tolerated.
+Respectful and constructive collaboration is required. Discrimination, harassment, or spam will not be tolerated.
