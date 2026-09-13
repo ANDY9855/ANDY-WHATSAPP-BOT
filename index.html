@@ -1,0 +1,1308 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WhatsApp Bot Monorepo - Local-First Automation Framework</title>
+    <!-- Google Design Assets -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,400;0,500;0,700;1,400&family=Roboto+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+
+    <style>
+        :root {
+            /* Material Design 3 Palette Tokens (Dark Default) */
+            --md-sys-color-primary: #A8C7FA;
+            --md-sys-color-on-primary: #003062;
+            --md-sys-color-primary-container: #004786;
+            --md-sys-color-on-primary-container: #D6E3FF;
+            --md-sys-color-secondary: #7FCFFF;
+            --md-sys-color-on-secondary: #00354E;
+            --md-sys-color-secondary-container: #004C6E;
+            --md-sys-color-on-secondary-container: #CBE6FF;
+            --md-sys-color-tertiary: #6DD58C;
+            --md-sys-color-on-tertiary: #003919;
+            --md-sys-color-tertiary-container: #005227;
+            --md-sys-color-on-tertiary-container: #89F2A6;
+            --md-sys-color-error: #FFB4AB;
+            --md-sys-color-on-error: #690005;
+            --md-sys-color-error-container: #93000A;
+            --md-sys-color-on-error-container: #FFDAD6;
+            --md-sys-color-background: #111318;
+            --md-sys-color-on-background: #E2E2E9;
+            --md-sys-color-surface: #111318;
+            --md-sys-color-on-surface: #E2E2E9;
+            --md-sys-color-surface-variant: #43474E;
+            --md-sys-color-on-surface-variant: #C3C6CF;
+            --md-sys-color-outline: #8D9199;
+            --md-sys-color-outline-variant: #43474E;
+            --md-sys-color-surface-container-lowest: #0C0E13;
+            --md-sys-color-surface-container-low: #191C20;
+            --md-sys-color-surface-container: #1D2024;
+            --md-sys-color-surface-container-high: #282A2F;
+            --md-sys-color-surface-container-highest: #33353A;
+            --md-sys-color-inverse-surface: #E2E2E9;
+            --md-sys-color-inverse-on-surface: #2E3036;
+            --md-sys-color-inverse-primary: #1B60A5;
+
+            /* Typography */
+            --md-sys-typescale-font-family: 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
+            --md-sys-typescale-mono-family: 'Roboto Mono', monospace;
+
+            /* Elevation & Shape */
+            --md-sys-shape-corner-xs: 4px;
+            --md-sys-shape-corner-s: 8px;
+            --md-sys-shape-corner-m: 12px;
+            --md-sys-shape-corner-l: 16px;
+            --md-sys-shape-corner-xl: 28px;
+            --md-sys-shape-corner-full: 9999px;
+
+            --md-sys-elevation-1: 0px 1px 3px 1px rgba(0, 0, 0, 0.15), 0px 1px 2px 0px rgba(0, 0, 0, 0.30);
+            --md-sys-elevation-2: 0px 2px 6px 2px rgba(0, 0, 0, 0.15), 0px 1px 2px 0px rgba(0, 0, 0, 0.30);
+            --md-sys-elevation-3: 0px 4px 8px 3px rgba(0, 0, 0, 0.15), 0px 1px 3px 0px rgba(0, 0, 0, 0.30);
+        }
+
+        [data-theme="light"] {
+            --md-sys-color-primary: #1B60A5;
+            --md-sys-color-on-primary: #FFFFFF;
+            --md-sys-color-primary-container: #D6E3FF;
+            --md-sys-color-on-primary-container: #001B3C;
+            --md-sys-color-secondary: #006492;
+            --md-sys-color-on-secondary: #FFFFFF;
+            --md-sys-color-secondary-container: #CBE6FF;
+            --md-sys-color-on-secondary-container: #001E30;
+            --md-sys-color-tertiary: #006D36;
+            --md-sys-color-on-tertiary: #FFFFFF;
+            --md-sys-color-tertiary-container: #89F2A6;
+            --md-sys-color-on-tertiary-container: #00210C;
+            --md-sys-color-error: #BA1A1A;
+            --md-sys-color-on-error: #FFFFFF;
+            --md-sys-color-error-container: #FFDAD6;
+            --md-sys-color-on-error-container: #410002;
+            --md-sys-color-background: #F9F9FF;
+            --md-sys-color-on-background: #191C20;
+            --md-sys-color-surface: #F9F9FF;
+            --md-sys-color-on-surface: #191C20;
+            --md-sys-color-surface-variant: #E0E2EC;
+            --md-sys-color-on-surface-variant: #43474E;
+            --md-sys-color-outline: #74777F;
+            --md-sys-color-outline-variant: #C3C6CF;
+            --md-sys-color-surface-container-lowest: #FFFFFF;
+            --md-sys-color-surface-container-low: #F3F3FA;
+            --md-sys-color-surface-container: #EDEDF4;
+            --md-sys-color-surface-container-high: #E7E8EE;
+            --md-sys-color-surface-container-highest: #E2E2E9;
+            --md-sys-color-inverse-surface: #2E3036;
+            --md-sys-color-inverse-on-surface: #F0F0F7;
+            --md-sys-color-inverse-primary: #A8C7FA;
+        }
+
+        /* Reset & Base Setup */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease;
+        }
+
+        body {
+            font-family: var(--md-sys-typescale-font-family);
+            background-color: var(--md-sys-color-background);
+            color: var(--md-sys-color-on-background);
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        a {
+            color: var(--md-sys-color-primary);
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .material-symbols-rounded {
+            font-family: 'Material Symbols Rounded';
+            font-weight: normal;
+            font-style: normal;
+            font-size: 24px;
+            line-height: 1;
+            letter-spacing: normal;
+            text-transform: none;
+            display: inline-block;
+            white-space: nowrap;
+            word-wrap: normal;
+            direction: ltr;
+            vertical-align: middle;
+        }
+
+        /* Top App Bar */
+        .top-app-bar {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background-color: var(--md-sys-color-surface-container);
+            border-bottom: 1px solid var(--md-sys-color-outline-variant);
+            padding: 0.75rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: var(--md-sys-elevation-1);
+        }
+
+        .top-app-bar .brand {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.25rem;
+            font-weight: 500;
+            color: var(--md-sys-color-on-surface);
+        }
+
+        .brand-icon-wrapper {
+            background-color: var(--md-sys-color-primary-container);
+            color: var(--md-sys-color-on-primary-container);
+            width: 40px;
+            height: 40px;
+            border-radius: var(--md-sys-shape-corner-m);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            list-style: none;
+        }
+
+        .nav-link {
+            padding: 0.5rem 1rem;
+            border-radius: var(--md-sys-shape-corner-full);
+            color: var(--md-sys-color-on-surface-variant);
+            font-weight: 500;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .nav-link:hover {
+            background-color: var(--md-sys-color-surface-container-high);
+            color: var(--md-sys-color-on-surface);
+            text-decoration: none;
+        }
+
+        .theme-toggle-btn {
+            background: transparent;
+            border: none;
+            color: var(--md-sys-color-on-surface-variant);
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            border-radius: var(--md-sys-shape-corner-full);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .theme-toggle-btn:hover {
+            background-color: var(--md-sys-color-surface-container-high);
+            color: var(--md-sys-color-on-surface);
+        }
+
+        /* Container Layout */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem;
+        }
+
+        /* Hero Section */
+        .hero {
+            background-color: var(--md-sys-color-surface-container-low);
+            border: 1px solid var(--md-sys-color-outline-variant);
+            border-radius: var(--md-sys-shape-corner-xl);
+            padding: 3rem 2rem;
+            margin-bottom: 2.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -100px;
+            right: -100px;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, var(--md-sys-color-primary-container) 0%, transparent 70%);
+            opacity: 0.4;
+            pointer-events: none;
+        }
+
+        .hero-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            margin-bottom: 1rem;
+            color: var(--md-sys-color-on-surface);
+        }
+
+        .hero-subtitle {
+            font-size: 1.15rem;
+            color: var(--md-sys-color-on-surface-variant);
+            max-width: 800px;
+            margin-bottom: 2rem;
+        }
+
+        .badges-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.35rem 0.85rem;
+            border-radius: var(--md-sys-shape-corner-s);
+            font-size: 0.85rem;
+            font-weight: 500;
+            background-color: var(--md-sys-color-surface-container-high);
+            color: var(--md-sys-color-on-surface);
+            border: 1px solid var(--md-sys-color-outline-variant);
+        }
+
+        .chip.primary {
+            background-color: var(--md-sys-color-primary-container);
+            color: var(--md-sys-color-on-primary-container);
+            border: none;
+        }
+
+        .chip.tertiary {
+            background-color: var(--md-sys-color-tertiary-container);
+            color: var(--md-sys-color-on-tertiary-container);
+            border: none;
+        }
+
+        .hero-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--md-sys-shape-corner-full);
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .btn-filled {
+            background-color: var(--md-sys-color-primary);
+            color: var(--md-sys-color-on-primary);
+        }
+
+        .btn-filled:hover {
+            box-shadow: var(--md-sys-elevation-2);
+            text-decoration: none;
+        }
+
+        .btn-tonal {
+            background-color: var(--md-sys-color-secondary-container);
+            color: var(--md-sys-color-on-secondary-container);
+        }
+
+        .btn-tonal:hover {
+            box-shadow: var(--md-sys-elevation-1);
+            text-decoration: none;
+        }
+
+        .btn-outlined {
+            background-color: transparent;
+            color: var(--md-sys-color-primary);
+            border: 1px solid var(--md-sys-color-outline);
+        }
+
+        .btn-outlined:hover {
+            background-color: var(--md-sys-color-surface-container-high);
+            text-decoration: none;
+        }
+
+        /* Section Styling */
+        .section {
+            margin-bottom: 3.5rem;
+            scroll-margin-top: 5rem;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .section-header h2 {
+            font-size: 1.75rem;
+            font-weight: 500;
+            color: var(--md-sys-color-on-surface);
+        }
+
+        .section-header .icon-badge {
+            width: 36px;
+            height: 36px;
+            border-radius: var(--md-sys-shape-corner-s);
+            background-color: var(--md-sys-color-secondary-container);
+            color: var(--md-sys-color-on-secondary-container);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Architecture Section Cards */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .card {
+            background-color: var(--md-sys-color-surface-container);
+            border: 1px solid var(--md-sys-color-outline-variant);
+            border-radius: var(--md-sys-shape-corner-l);
+            padding: 1.5rem;
+            box-shadow: var(--md-sys-elevation-1);
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 500;
+            color: var(--md-sys-color-on-surface);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .card-badge {
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 0.2rem 0.6rem;
+            border-radius: var(--md-sys-shape-corner-full);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .badge-v1 {
+            background-color: var(--md-sys-color-secondary-container);
+            color: var(--md-sys-color-on-secondary-container);
+        }
+
+        .badge-v2 {
+            background-color: var(--md-sys-color-tertiary-container);
+            color: var(--md-sys-color-on-tertiary-container);
+        }
+
+        .spec-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .spec-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            font-size: 0.95rem;
+            color: var(--md-sys-color-on-surface-variant);
+        }
+
+        .spec-item .material-symbols-rounded {
+            color: var(--md-sys-color-primary);
+            font-size: 20px;
+            margin-top: 2px;
+        }
+
+        .spec-item strong {
+            color: var(--md-sys-color-on-surface);
+        }
+
+        /* Command Matrix Section */
+        .controls-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            background-color: var(--md-sys-color-surface-container-low);
+            padding: 1rem;
+            border-radius: var(--md-sys-shape-corner-l);
+            border: 1px solid var(--md-sys-color-outline-variant);
+        }
+
+        .search-box {
+            position: relative;
+            flex: 1;
+            min-width: 260px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 0.75rem 1rem 0.75rem 2.75rem;
+            border-radius: var(--md-sys-shape-corner-full);
+            border: 1px solid var(--md-sys-color-outline);
+            background-color: var(--md-sys-color-surface);
+            color: var(--md-sys-color-on-surface);
+            font-size: 0.95rem;
+            outline: none;
+        }
+
+        .search-box input:focus {
+            border-color: var(--md-sys-color-primary);
+            box-shadow: 0 0 0 2px var(--md-sys-color-primary-container);
+        }
+
+        .search-box .material-symbols-rounded {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--md-sys-color-on-surface-variant);
+        }
+
+        .filter-tabs {
+            display: flex;
+            gap: 0.5rem;
+            overflow-x: auto;
+            padding-bottom: 0.25rem;
+        }
+
+        .tab-btn {
+            background-color: var(--md-sys-color-surface-container);
+            border: 1px solid var(--md-sys-color-outline-variant);
+            color: var(--md-sys-color-on-surface-variant);
+            padding: 0.5rem 1rem;
+            border-radius: var(--md-sys-shape-corner-full);
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .tab-btn.active {
+            background-color: var(--md-sys-color-primary-container);
+            color: var(--md-sys-color-on-primary-container);
+            border-color: var(--md-sys-color-primary);
+        }
+
+        .commands-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1rem;
+        }
+
+        .command-card {
+            background-color: var(--md-sys-color-surface-container-low);
+            border: 1px solid var(--md-sys-color-outline-variant);
+            border-radius: var(--md-sys-shape-corner-m);
+            padding: 1.25rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            position: relative;
+        }
+
+        .command-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .command-name {
+            font-family: var(--md-sys-typescale-mono-family);
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--md-sys-color-primary);
+        }
+
+        .command-usage {
+            font-family: var(--md-sys-typescale-mono-family);
+            font-size: 0.8rem;
+            background-color: var(--md-sys-color-surface-container-highest);
+            color: var(--md-sys-color-on-surface-variant);
+            padding: 0.25rem 0.5rem;
+            border-radius: var(--md-sys-shape-corner-xs);
+            word-break: break-all;
+        }
+
+        .command-desc {
+            font-size: 0.9rem;
+            color: var(--md-sys-color-on-surface-variant);
+            flex-grow: 1;
+        }
+
+        .command-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 0.25rem;
+        }
+
+        .copy-btn {
+            background: transparent;
+            border: none;
+            color: var(--md-sys-color-primary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            font-size: 0.8rem;
+            font-weight: 500;
+            padding: 0.25rem 0.5rem;
+            border-radius: var(--md-sys-shape-corner-xs);
+        }
+
+        .copy-btn:hover {
+            background-color: var(--md-sys-color-surface-container-high);
+        }
+
+        /* Quick Start Tabs & Code Blocks */
+        .tabs-container {
+            background-color: var(--md-sys-color-surface-container);
+            border-radius: var(--md-sys-shape-corner-l);
+            border: 1px solid var(--md-sys-color-outline-variant);
+            overflow: hidden;
+        }
+
+        .tab-header {
+            display: flex;
+            background-color: var(--md-sys-color-surface-container-high);
+            border-bottom: 1px solid var(--md-sys-color-outline-variant);
+        }
+
+        .tab-header-btn {
+            flex: 1;
+            padding: 1rem;
+            background: transparent;
+            border: none;
+            color: var(--md-sys-color-on-surface-variant);
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            border-bottom: 3px solid transparent;
+        }
+
+        .tab-header-btn.active {
+            color: var(--md-sys-color-primary);
+            border-bottom-color: var(--md-sys-color-primary);
+            background-color: var(--md-sys-color-surface-container);
+        }
+
+        .tab-body {
+            padding: 1.5rem;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .code-block {
+            background-color: var(--md-sys-color-surface-container-lowest);
+            border: 1px solid var(--md-sys-color-outline-variant);
+            border-radius: var(--md-sys-shape-corner-m);
+            padding: 1rem 1.25rem;
+            font-family: var(--md-sys-typescale-mono-family);
+            font-size: 0.9rem;
+            color: var(--md-sys-color-on-surface);
+            overflow-x: auto;
+            position: relative;
+            margin-top: 0.75rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .code-block code {
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .code-block .copy-code-btn {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background-color: var(--md-sys-color-surface-container-high);
+            color: var(--md-sys-color-on-surface-variant);
+            border: 1px solid var(--md-sys-color-outline-variant);
+            border-radius: var(--md-sys-shape-corner-s);
+            padding: 0.25rem 0.5rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            font-size: 0.75rem;
+        }
+
+        .code-block .copy-code-btn:hover {
+            color: var(--md-sys-color-on-surface);
+            background-color: var(--md-sys-color-surface-container-highest);
+        }
+
+        /* Endpoint Inspector */
+        .endpoint-card {
+            background-color: var(--md-sys-color-surface-container-low);
+            border: 1px solid var(--md-sys-color-outline-variant);
+            border-radius: var(--md-sys-shape-corner-m);
+            padding: 1rem 1.25rem;
+            margin-bottom: 1rem;
+        }
+
+        .endpoint-method {
+            display: inline-block;
+            font-family: var(--md-sys-typescale-mono-family);
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 0.2rem 0.5rem;
+            border-radius: var(--md-sys-shape-corner-xs);
+            margin-right: 0.5rem;
+        }
+
+        .method-get {
+            background-color: var(--md-sys-color-tertiary-container);
+            color: var(--md-sys-color-on-tertiary-container);
+        }
+
+        .method-post {
+            background-color: var(--md-sys-color-primary-container);
+            color: var(--md-sys-color-on-primary-container);
+        }
+
+        .endpoint-url {
+            font-family: var(--md-sys-typescale-mono-family);
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: var(--md-sys-color-on-surface);
+        }
+
+        /* Directives Grid */
+        .directive-card {
+            background-color: var(--md-sys-color-surface-container-low);
+            border-left: 4px solid var(--md-sys-color-primary);
+            border-radius: var(--md-sys-shape-corner-s);
+            padding: 1.25rem;
+            display: flex;
+            gap: 1rem;
+        }
+
+        .directive-card.warning {
+            border-left-color: var(--md-sys-color-error);
+        }
+
+        .directive-card .icon-box {
+            color: var(--md-sys-color-primary);
+        }
+
+        .directive-card.warning .icon-box {
+            color: var(--md-sys-color-error);
+        }
+
+        .directive-title {
+            font-weight: 500;
+            font-size: 1.05rem;
+            margin-bottom: 0.25rem;
+            color: var(--md-sys-color-on-surface);
+        }
+
+        .directive-desc {
+            font-size: 0.9rem;
+            color: var(--md-sys-color-on-surface-variant);
+        }
+
+        /* Snackbar Toast Notification */
+        .snackbar {
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            background-color: var(--md-sys-color-inverse-surface);
+            color: var(--md-sys-color-inverse-on-surface);
+            padding: 0.75rem 1.25rem;
+            border-radius: var(--md-sys-shape-corner-s);
+            box-shadow: var(--md-sys-elevation-3);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            pointer-events: none;
+            z-index: 2000;
+        }
+
+        .snackbar.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Footer */
+        footer {
+            margin-top: 4rem;
+            padding: 2rem 0;
+            border-top: 1px solid var(--md-sys-color-outline-variant);
+            text-align: center;
+            color: var(--md-sys-color-on-surface-variant);
+            font-size: 0.9rem;
+        }
+
+        /* Responsive Breakpoints */
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 1.8rem;
+            }
+            .nav-links {
+                display: none;
+            }
+            .top-app-bar {
+                padding: 0.75rem 1rem;
+            }
+            .container {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Top App Bar -->
+    <header class="top-app-bar">
+        <div class="brand">
+            <div class="brand-icon-wrapper">
+                <span class="material-symbols-rounded">smart_toy</span>
+            </div>
+            <span>WhatsApp Bot Monorepo</span>
+        </div>
+        <ul class="nav-links">
+            <li><a href="#overview" class="nav-link"><span class="material-symbols-rounded">info</span> Overview</a></li>
+            <li><a href="#architecture" class="nav-link"><span class="material-symbols-rounded">schema</span> Architecture</a></li>
+            <li><a href="#commands" class="nav-link"><span class="material-symbols-rounded">terminal</span> Commands</a></li>
+            <li><a href="#quickstart" class="nav-link"><span class="material-symbols-rounded">rocket_launch</span> Setup</a></li>
+            <li><a href="#dashboard" class="nav-link"><span class="material-symbols-rounded">dashboard</span> Operations</a></li>
+            <li><a href="#security" class="nav-link"><span class="material-symbols-rounded">security</span> Security</a></li>
+        </ul>
+        <button class="theme-toggle-btn" id="themeToggle" title="Toggle Light/Dark Theme">
+            <span class="material-symbols-rounded" id="themeIcon">light_mode</span>
+        </button>
+    </header>
+
+    <div class="container">
+
+        <!-- Hero Section -->
+        <section class="hero" id="overview">
+            <h1 class="hero-title">Local-First WhatsApp Automation</h1>
+            <p class="hero-subtitle">
+                A multi-generational, autonomous WhatsApp automation engine engineered on top of Baileys.
+                Runs entirely on local hardware with zero third-party cloud lock-in, high-throughput media processing, and configurable backend adapters.
+            </p>
+            <div class="badges-row">
+                <span class="chip primary"><span class="material-symbols-rounded">check_circle</span> Baileys v6 Socket</span>
+                <span class="chip tertiary"><span class="material-symbols-rounded">memory</span> Node.js 20+ / 18+</span>
+                <span class="chip"><span class="material-symbols-rounded">code</span> TypeScript &amp; ESM</span>
+                <span class="chip"><span class="material-symbols-rounded">database</span> MariaDB / MySQL</span>
+                <span class="chip"><span class="material-symbols-rounded">shield</span> 100% Privacy First</span>
+            </div>
+            <div class="hero-actions">
+                <a href="#quickstart" class="btn btn-filled">
+                    <span class="material-symbols-rounded">play_arrow</span> Quick Start Setup
+                </a>
+                <a href="#commands" class="btn btn-tonal">
+                    <span class="material-symbols-rounded">search</span> Explore Commands
+                </a>
+                <a href="#architecture" class="btn btn-outlined">
+                    <span class="material-symbols-rounded">compare_arrows</span> V-1 vs V-2 Matrix
+                </a>
+            </div>
+        </section>
+
+        <!-- Architectural Comparison Section -->
+        <section class="section" id="architecture">
+            <div class="section-header">
+                <div class="icon-badge">
+                    <span class="material-symbols-rounded">architecture</span>
+                </div>
+                <h2>Architectural Matrix (V-1 vs V-2)</h2>
+            </div>
+            <div class="grid-2">
+                <!-- V-1 Card -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <span class="material-symbols-rounded">javascript</span>
+                            Version 1 (V-1 Engine)
+                        </div>
+                        <span class="card-badge badge-v1">Stable Production</span>
+                    </div>
+                    <p style="font-size: 0.9rem; color: var(--md-sys-color-on-surface-variant);">
+                        Lightweight, single-node JavaScript ES Module implementation designed for rapid execution and file-system backed session logging.
+                    </p>
+                    <ul class="spec-list">
+                        <li class="spec-item">
+                            <span class="material-symbols-rounded">code</span>
+                            <div><strong>Language:</strong> JavaScript (ES Modules)</div>
+                        </li>
+                        <li class="spec-item">
+                            <span class="material-symbols-rounded">settings_power</span>
+                            <div><strong>Runtime:</strong> Node.js &gt;= 18.0.0</div>
+                        </li>
+                        <li class="spec-item">
+                            <span class="material-symbols-rounded">folder</span>
+                            <div><strong>Persistence:</strong> File System (JSON / Pino Structured Logs)</div>
+                        </li>
+                        <li class="spec-item">
+                            <span class="material-symbols-rounded">speed</span>
+                            <div><strong>Concurrency:</strong> p-queue Rate Limiter (5 req / 10s)</div>
+                        </li>
+                        <li class="spec-item">
+                            <span class="material-symbols-rounded">psychology</span>
+                            <div><strong>AI Engine:</strong> Direct Groq LLaMA 3.3 70B &amp; DDGS</div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- V-2 Card -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <span class="material-symbols-rounded">integration_instructions</span>
+                            Version 2 (V-2 Engine)
+                        </div>
+                        <span class="card-badge badge-v2">Active Development</span>
+                    </div>
+                    <p style="font-size: 0.9rem; color: var(--md-sys-color-on-surface-variant);">
+                        High-throughput TypeScript engine with relational MariaDB persistence, anti-delete intercepters, view-once recovery, and REST monitoring.
+                    </p>
+                    <ul class="spec-list">
+                        <li class="spec-item">
+                            <span class="material-symbols-rounded">code</span>
+                            <div><strong>Language:</strong> TypeScript (Strict Mode)</div>
+                        </li>
+                        <li class="spec-item">
+                            <span class="material-symbols-rounded">settings_power</span>
+                            <div><strong>Runtime:</strong> Node.js &gt;= 20.0.0</div>
+                        </li>
+                        <li class="spec-item">
+                            <span class="material-symbols-rounded">database</span>
+                            <div><strong>Persistence:</strong> MariaDB / MySQL Relational Schema</div>
+                        </li>
+                        <li class="spec-item">
+                            <span class="material-symbols-rounded">history_toggle_off</span>
+                            <div><strong>Anti-Delete:</strong> Always-on local message capture &amp; owner alert</div>
+                        </li>
+                        <li class="spec-item">
+                            <span class="material-symbols-rounded">visibility</span>
+                            <div><strong>View-Once:</strong> Media extraction via <code>.vv</code> command</div>
+                        </li>
+                        <li class="spec-item">
+                            <span class="material-symbols-rounded">monitoring</span>
+                            <div><strong>Dashboard:</strong> Local HTTP REST API (Port 8787 / 8788)</div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Command Explorer Section -->
+        <section class="section" id="commands">
+            <div class="section-header">
+                <div class="icon-badge">
+                    <span class="material-symbols-rounded">terminal</span>
+                </div>
+                <h2>Interactive Command Suite</h2>
+            </div>
+
+            <div class="controls-bar">
+                <div class="search-box">
+                    <span class="material-symbols-rounded">search</span>
+                    <input type="text" id="commandSearch" placeholder="Search commands, usages, or features...">
+                </div>
+                <div class="filter-tabs">
+                    <button class="tab-btn active" data-category="all">All Commands</button>
+                    <button class="tab-btn" data-category="ai">AI &amp; Vision</button>
+                    <button class="tab-btn" data-category="media">Media &amp; DL</button>
+                    <button class="tab-btn" data-category="web">Web Tools</button>
+                    <button class="tab-btn" data-category="reader">Reader &amp; Literature</button>
+                    <button class="tab-btn" data-category="v2">V-2 Recovery</button>
+                </div>
+            </div>
+
+            <div class="commands-grid" id="commandsGrid">
+                <!-- Generated by JS -->
+            </div>
+        </section>
+
+        <!-- Quick Start Setup Guide -->
+        <section class="section" id="quickstart">
+            <div class="section-header">
+                <div class="icon-badge">
+                    <span class="material-symbols-rounded">rocket_launch</span>
+                </div>
+                <h2>Quick Start Installation Guide</h2>
+            </div>
+
+            <div class="tabs-container">
+                <div class="tab-header">
+                    <button class="tab-header-btn active" onclick="switchSetupTab('v1-setup')">
+                        <span class="material-symbols-rounded">javascript</span> Version 1 Setup (JS)
+                    </button>
+                    <button class="tab-header-btn" onclick="switchSetupTab('v2-setup')">
+                        <span class="material-symbols-rounded">integration_instructions</span> Version 2 Setup (TS + MariaDB)
+                    </button>
+                </div>
+
+                <div class="tab-body">
+                    <!-- V1 Setup -->
+                    <div class="tab-content active" id="v1-setup">
+                        <p style="margin-bottom: 1rem; color: var(--md-sys-color-on-surface-variant);">
+                            Install and run Version 1 in production mode using Node.js (&gt;= 18.0.0).
+                        </p>
+                        <div class="code-block">
+                            <button class="copy-code-btn" onclick="copyText(this)">
+                                <span class="material-symbols-rounded">content_copy</span> Copy
+                            </button>
+                            <code># Navigate to V-1 directory
+cd V-1
+
+# Install package dependencies
+npm install
+
+# Copy environment configuration
+cp .env.example .env
+
+# Configure environment keys (e.g. GROQ_API_KEY)
+# nano .env
+
+# Launch bot in production mode
+npm start</code>
+                        </div>
+                    </div>
+
+                    <!-- V2 Setup -->
+                    <div class="tab-content" id="v2-setup">
+                        <p style="margin-bottom: 1rem; color: var(--md-sys-color-on-surface-variant);">
+                            Setup Version 2 with MariaDB backend, TypeScript compilation, and automated tests.
+                        </p>
+                        <div class="code-block">
+                            <button class="copy-code-btn" onclick="copyText(this)">
+                                <span class="material-symbols-rounded">content_copy</span> Copy
+                            </button>
+                            <code># Ensure MariaDB server is active on port 3306
+# Import database schema:
+# mysql -u root -p < V-2/sql/schema.sql
+
+# Navigate to V-2 directory
+cd V-2
+
+# Copy environment configuration
+cp .env.example .env
+
+# Install dependencies & build source
+npm install
+npm run build
+
+# Run unit tests
+npm test
+
+# Launch production process
+npm start</code>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Local Operations & Dashboard -->
+        <section class="section" id="dashboard">
+            <div class="section-header">
+                <div class="icon-badge">
+                    <span class="material-symbols-rounded">dashboard</span>
+                </div>
+                <h2>Local Operations &amp; Dashboard (V-2)</h2>
+            </div>
+
+            <p style="margin-bottom: 1.5rem; color: var(--md-sys-color-on-surface-variant);">
+                Version 2 hosts a local background monitoring HTTP server bound strictly to the loopback interface (<code>127.0.0.1</code>) for real-time status inspecting and control.
+            </p>
+
+            <div class="grid-2">
+                <div class="endpoint-card">
+                    <div style="margin-bottom: 0.5rem;">
+                        <span class="endpoint-method method-get">GET</span>
+                        <span class="endpoint-url">http://127.0.0.1:8787/health</span>
+                    </div>
+                    <p style="font-size: 0.85rem; color: var(--md-sys-color-on-surface-variant);">
+                        Health check endpoint for process supervisors and container liveness probes.
+                    </p>
+                </div>
+
+                <div class="endpoint-card">
+                    <div style="margin-bottom: 0.5rem;">
+                        <span class="endpoint-method method-get">GET</span>
+                        <span class="endpoint-url">http://127.0.0.1:8788/api/status</span>
+                    </div>
+                    <p style="font-size: 0.85rem; color: var(--md-sys-color-on-surface-variant);">
+                        Detailed operational telemetry, socket state, message throughput, and MariaDB pool metrics.
+                    </p>
+                </div>
+
+                <div class="endpoint-card">
+                    <div style="margin-bottom: 0.5rem;">
+                        <span class="endpoint-method method-post">POST</span>
+                        <span class="endpoint-url">http://127.0.0.1:8788/api/trusted</span>
+                    </div>
+                    <p style="font-size: 0.85rem; color: var(--md-sys-color-on-surface-variant);">
+                        Modify trusted owner/admin entity rules dynamically via bearer token authentication.
+                    </p>
+                </div>
+
+                <div class="endpoint-card">
+                    <div style="margin-bottom: 0.5rem;">
+                        <span class="endpoint-method method-post">PM2</span>
+                        <span class="endpoint-url">pm2 start ecosystem.config.cjs</span>
+                    </div>
+                    <p style="font-size: 0.85rem; color: var(--md-sys-color-on-surface-variant);">
+                        Production process management with automatic restarts and log rotation.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Security & Privacy Directives -->
+        <section class="section" id="security">
+            <div class="section-header">
+                <div class="icon-badge">
+                    <span class="material-symbols-rounded">security</span>
+                </div>
+                <h2>Security &amp; Data Privacy Directives</h2>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 1rem;">
+                <div class="directive-card warning">
+                    <div class="icon-box">
+                        <span class="material-symbols-rounded">warning</span>
+                    </div>
+                    <div>
+                        <div class="directive-title">Session Credentials Protection</div>
+                        <div class="directive-desc">
+                            Never commit or share folders containing <code>auth_info/</code> or <code>auth_info_baileys/</code>. These directory structures hold raw RSA keypairs and authentication tokens granting complete access to your WhatsApp session.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="directive-card">
+                    <div class="icon-box">
+                        <span class="material-symbols-rounded">lock</span>
+                    </div>
+                    <div>
+                        <div class="directive-title">Loopback Binding Constraint</div>
+                        <div class="directive-desc">
+                            Ensure health and monitoring ports (<code>8787</code> and <code>8788</code>) remain bound strictly to <code>127.0.0.1</code>. Do not expose administrative ports to public networks without HTTPS and bearer tokens.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="directive-card">
+                    <div class="icon-box">
+                        <span class="material-symbols-rounded">gavel</span>
+                    </div>
+                    <div>
+                        <div class="directive-title">Compliance &amp; Responsible Use</div>
+                        <div class="directive-desc">
+                            Execute automated message handling strictly in accordance with local regulations, recipient consent, and WhatsApp's official Terms of Service.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer>
+            <p>WhatsApp Bot Monorepo &bull; Open-Source Software under MIT License</p>
+            <p style="margin-top: 0.5rem; font-size: 0.8rem;">Designed with Material Design 3 and Google Design Assets</p>
+        </footer>
+
+    </div>
+
+    <!-- Toast Snackbar -->
+    <div class="snackbar" id="snackbar">
+        <span class="material-symbols-rounded">check_circle</span>
+        <span id="snackbarMsg">Copied to clipboard!</span>
+    </div>
+
+    <!-- Script for Interactivity -->
+    <script>
+        // Command Suite Data
+        const commands = [
+            { name: '.aibot', version: 'V-1', category: 'ai', usage: '.aibot <prompt>', desc: 'Conversational AI using Groq LLaMA 3.3 70B model.' },
+            { name: '.vision', version: 'V-1', category: 'ai', usage: 'Reply image + .vision <prompt>', desc: 'Multimodal image understanding and analysis.' },
+            { name: '.img', version: 'V-1', category: 'ai', usage: '.img <prompt>', desc: 'Text-to-image generation supporting bulk generation.' },
+            { name: '.i2i', version: 'V-1', category: 'ai', usage: 'Reply image + .i2i <prompt>', desc: 'Image-to-image AI style transformation.' },
+            { name: '.dl', version: 'V-1/V-2', category: 'media', usage: '.dl <url>', desc: 'Downloads video/audio media using yt-dlp binary or API adapter.' },
+            { name: '.audio', version: 'V-1', category: 'media', usage: '.audio <url>', desc: 'Extracts MP3 audio using local yt-dlp binary.' },
+            { name: '.alldl', version: 'V-1', category: 'media', usage: '.alldl <url>', desc: 'Universal media downloader for TikTok, IG, FB, Reddit, X.' },
+            { name: '.tts', version: 'V-1/V-2', category: 'media', usage: '.tts <text>', desc: 'Converts text into synthesized speech audio file.' },
+            { name: '.screenshot', version: 'V-1/V-2', category: 'web', usage: '.screenshot <url>', desc: 'Captures full webpage screenshots (PNG/PDF).' },
+            { name: '.zip', version: 'V-1', category: 'web', usage: '.zip <url>', desc: 'Archives website assets into downloadable ZIP container.' },
+            { name: '.wikipdf', version: 'V-1', category: 'web', usage: '.wikipdf <article>', desc: 'Compiles Wikipedia articles into formatted PDF documents.' },
+            { name: '.cert', version: 'V-1', category: 'web', usage: '.cert <name> <type>', desc: 'Generates custom PDF certificates (8 templates supported).' },
+            { name: '.search', version: 'V-1', category: 'web', usage: '.search <query>', desc: 'Fetches web search results from DuckDuckGo search API.' },
+            { name: '.manga', version: 'V-1', category: 'reader', usage: '.manga <query>', desc: 'Interactive Manga browser, chapter index, and reader.' },
+            { name: '.novel', version: 'V-1', category: 'reader', usage: '.novel <query>', desc: 'Light novel database browser with translation support.' },
+            { name: '.unovel', version: 'V-1', category: 'reader', usage: '.unovel <query>', desc: 'Specialized Urdu novels library and catalog reader.' },
+            { name: '.movie', version: 'V-1', category: 'reader', usage: '.movie <title>', desc: 'Movie metadata, poster, cast, and IMDB ratings.' },
+            { name: '.med', version: 'V-1', category: 'reader', usage: '.med <medicine_name>', desc: 'Pharmaceutical info lookup (dosage, interactions, pricing).' },
+            { name: '.vv', version: 'V-2', category: 'v2', usage: 'Reply view-once + .vv', desc: 'Intercepts view-once image/video/audio and converts to normal file.' },
+            { name: '.antidelete', version: 'V-2', category: 'v2', usage: '.antidelete [on|off]', desc: 'Status inspector for anti-delete background capture system.' },
+            { name: '.hand', version: 'V-2', category: 'v2', usage: '.hand <text>', desc: 'Converts input text into handwritten manuscript image.' },
+            { name: '.ping', version: 'V-1/V-2', category: 'web', usage: '.ping', desc: 'Evaluates bot execution latency and health status.' }
+        ];
+
+        // Render Commands
+        function renderCommands(filterCategory = 'all', searchQuery = '') {
+            const grid = document.getElementById('commandsGrid');
+            grid.innerHTML = '';
+
+            const filtered = commands.filter(cmd => {
+                const matchesCategory = filterCategory === 'all' || cmd.category === filterCategory || (filterCategory === 'v2' && cmd.version.includes('V-2'));
+                const query = searchQuery.toLowerCase();
+                const matchesSearch = cmd.name.toLowerCase().includes(query) ||
+                                      cmd.desc.toLowerCase().includes(query) ||
+                                      cmd.usage.toLowerCase().includes(query);
+                return matchesCategory && matchesSearch;
+            });
+
+            if (filtered.length === 0) {
+                grid.innerHTML = `<div style="grid-column: 1 / -1; text-align: center; padding: 2rem; color: var(--md-sys-color-on-surface-variant);">No matching commands found.</div>`;
+                return;
+            }
+
+            filtered.forEach(cmd => {
+                const card = document.createElement('div');
+                card.className = 'command-card';
+                card.innerHTML = `
+                    <div class="command-header">
+                        <span class="command-name">${cmd.name}</span>
+                        <span class="chip" style="font-size: 0.7rem; padding: 0.1rem 0.4rem;">${cmd.version}</span>
+                    </div>
+                    <div class="command-usage">${cmd.usage}</div>
+                    <div class="command-desc">${cmd.desc}</div>
+                    <div class="command-footer">
+                        <button class="copy-btn" onclick="copyCommand('${cmd.name}')">
+                            <span class="material-symbols-rounded" style="font-size: 16px;">content_copy</span>
+                            Copy Syntax
+                        </button>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // Search Listener
+        document.getElementById('commandSearch').addEventListener('input', (e) => {
+            const activeTab = document.querySelector('.filter-tabs .tab-btn.active');
+            const category = activeTab ? activeTab.dataset.category : 'all';
+            renderCommands(category, e.target.value);
+        });
+
+        // Filter Tabs
+        document.querySelectorAll('.filter-tabs .tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.filter-tabs .tab-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                const searchQuery = document.getElementById('commandSearch').value;
+                renderCommands(btn.dataset.category, searchQuery);
+            });
+        });
+
+        // Switch Setup Tab
+        function switchSetupTab(tabId) {
+            document.querySelectorAll('.tab-header-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+            event.currentTarget.classList.add('active');
+            document.getElementById(tabId).classList.add('active');
+        }
+
+        // Theme Toggle
+        const themeToggleBtn = document.getElementById('themeToggle');
+        const themeIcon = document.getElementById('themeIcon');
+
+        themeToggleBtn.addEventListener('click', () => {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            themeIcon.textContent = newTheme === 'light' ? 'dark_mode' : 'light_mode';
+            showSnackbar(`Switched to ${newTheme} mode`);
+        });
+
+        // Copy Helper
+        function copyCommand(text) {
+            navigator.clipboard.writeText(text);
+            showSnackbar(`Copied command '${text}' to clipboard`);
+        }
+
+        function copyText(buttonEl) {
+            const codeBlock = buttonEl.nextElementSibling;
+            if (codeBlock) {
+                navigator.clipboard.writeText(codeBlock.textContent.trim());
+                showSnackbar('Configuration snippet copied');
+            }
+        }
+
+        // Snackbar Toast
+        function showSnackbar(message) {
+            const snackbar = document.getElementById('snackbar');
+            const msgEl = document.getElementById('snackbarMsg');
+            msgEl.textContent = message;
+            snackbar.classList.add('show');
+            setTimeout(() => {
+                snackbar.classList.remove('show');
+            }, 3000);
+        }
+
+        // Initial Render
+        renderCommands();
+    </script>
+</body>
+</html>
