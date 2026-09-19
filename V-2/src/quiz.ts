@@ -59,7 +59,7 @@ export function answerQuiz(jid: string, option: number) {
 
 function questionText(session: QuizSession) {
   const q = session.questions[session.current]
-  return `*🤖 BOT_404 QUIZ*\n\n*Question ${session.current + 1}/${session.questions.length}*\n${q.question}\n\n${q.options.map((option, i) => `*${i + 1}.* ${option}`).join('\n')}\n\n*Reply with:* .option-1, .option-2, .option-3, or .option-4\nYou can also reply with just *1*, *2*, *3*, or *4*.`
+  return `*🤖 Andy's Bot QUIZ*\n\n*Question ${session.current + 1}/${session.questions.length}*\n${q.question}\n\n${q.options.map((option, i) => `*${i + 1}.* ${option}`).join('\n')}\n\n*Reply with:* .option-1, .option-2, .option-3, or .option-4\nYou can also reply with just *1*, *2*, *3*, or *4*.`
 }
 
 function reportText(session: QuizSession) {
@@ -72,5 +72,5 @@ function reportText(session: QuizSession) {
     const mark = session.answers[i] === q.answer ? '✅' : '❌'
     return `${mark} ${i + 1}. ${chosen} | Correct: ${q.options[q.answer]}`
   }).join('\n')
-  return `*🤖 BOT_404 REPORT CARD*\n\n*Quiz complete!*\n\n*Score:* ${score}/${total}\n*Percentage:* ${percent}%\n*Grade:* ${grade}\n\n*Answer Review*\n${rows}\n\nThank you for playing BOT_404 Quiz.`
+  return `*🤖 Andy's Bot REPORT CARD*\n\n*Quiz complete!*\n\n*Score:* ${score}/${total}\n*Percentage:* ${percent}%\n*Grade:* ${grade}\n\n*Answer Review*\n${rows}\n\nThank you for playing Andy's Bot Quiz.`
 }

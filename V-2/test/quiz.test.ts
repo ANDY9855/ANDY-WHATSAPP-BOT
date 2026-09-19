@@ -22,7 +22,7 @@ test('completes a ten-question session with a report card', () => {
   for (let i = 0; i < 9; i++) assert.equal(answerQuiz(jid, 0).kind, 'next')
   const final = answerQuiz(jid, 0)
   assert.equal(final.kind, 'complete')
-  assert.match(final.text, /BOT_404 REPORT CARD/)
+  assert.match(final.text, /Andy's Bot REPORT CARD/)
   assert.match(final.text, /\*Score:\* 1\/10/)
   assert.equal(hasQuiz(jid), false)
 })

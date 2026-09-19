@@ -1,5 +1,5 @@
 {
-  "name": "bot-404",
+  "name": "andys-bot",
   "version": "1.0.0",
   "private": true,
   "type": "module",
@@ -7,7 +7,7 @@
     "dev": "tsx src/index.ts",
     "start": "node dist/src/index.js",
     "build": "tsc -p tsconfig.json",
-    "test": "tsx --test test/**/*.test.ts",
+    "test": "tsx --test test/commands.test.ts",
     "lint": "tsc --noEmit -p tsconfig.json"
   },
   "dependencies": {

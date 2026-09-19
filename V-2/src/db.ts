@@ -26,7 +26,7 @@ export class MessageRepository {
     this.pool = mysql.createPool({
       host: process.env.DB_HOST ?? '127.0.0.1',
       port: Number(process.env.DB_PORT ?? 3306),
-      database: process.env.DB_NAME ?? 'bot_404',
+      database: process.env.DB_NAME ?? 'andys_bot',
       user: process.env.DB_USER ?? 'root',
       password: process.env.DB_PASSWORD ?? '',
       waitForConnections: true,
@@ -61,6 +61,17 @@ export class MessageRepository {
     if (!rows[0]) return null
     const row = rows[0]
     return { ...row, rawMessage: typeof row.rawMessage === 'string' ? JSON.parse(row.rawMessage) : row.rawMessage }
+  }
+
+  async getRecentMessages(chatJid: string, limit = 10): Promise<StoredMessage[]> {
+    const [rows] = await this.pool.execute<StoredRow[]>(
+      `SELECT message_id AS messageId, chat_jid AS chatJid, sender_jid AS senderJid,
+       participant_jid AS participantJid, message_type AS messageType, text_body AS textBody,
+       caption, quoted_message_id AS quotedMessageId, raw_message AS rawMessage,
+       media_path AS mediaPath, media_mimetype AS mediaMimetype, media_filename AS mediaFilename
+       FROM bot_messages WHERE chat_jid = ? AND (text_body IS NOT NULL OR caption IS NOT NULL)
+       ORDER BY created_at DESC LIMIT ?`, [chatJid, limit])
+    return rows.map(r => ({ ...r, rawMessage: typeof r.rawMessage === 'string' ? JSON.parse(r.rawMessage) : r.rawMessage })).reverse()
   }
 
   async markRevoked(messageId: string) {

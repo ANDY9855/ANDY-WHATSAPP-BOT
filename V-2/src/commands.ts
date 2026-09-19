@@ -14,11 +14,72 @@ export function parseCommand(text: string, prefix = '.') : Command {
   return { name: parts[0].toLowerCase(), args: parts.slice(1), raw: trimmed }
 }
 
+export function parseVoiceIndexAndText(args: string[]): { voiceIndex: number; textToSpeak: string } {
+  const cleanArgs = [...args]
+  let voiceIndex = 314
+
+  if (cleanArgs.length > 0 && cleanArgs[0] === '|') cleanArgs.shift()
+  if (cleanArgs.length > 0 && cleanArgs[cleanArgs.length - 1] === '|') cleanArgs.pop()
+
+  if (cleanArgs.length === 1 && /^\d+$/.test(cleanArgs[0])) {
+    const parsed = parseInt(cleanArgs[0], 10)
+    if (parsed > 0) voiceIndex = parsed
+    return { voiceIndex, textToSpeak: '' }
+  }
+
+  if (cleanArgs.length > 1 && /^\d+$/.test(cleanArgs[cleanArgs.length - 1])) {
+    const parsed = parseInt(cleanArgs.pop()!, 10)
+    if (parsed > 0) voiceIndex = parsed
+    if (cleanArgs.length > 0 && cleanArgs[cleanArgs.length - 1] === '|') cleanArgs.pop()
+  } else if (cleanArgs.length > 1 && /^\d+$/.test(cleanArgs[0])) {
+    const parsed = parseInt(cleanArgs.shift()!, 10)
+    if (parsed > 0) voiceIndex = parsed
+    if (cleanArgs.length > 0 && cleanArgs[0] === '|') cleanArgs.shift()
+  }
+
+  const textToSpeak = cleanArgs.join(' ').trim()
+  return { voiceIndex, textToSpeak }
+}
+
+export function parseSendVoiceArgs(rawPayload: string): { phone: string; cleanPhone: string; textToSpeak: string; voiceIndex: number } | null {
+  const cleanedPayload = rawPayload.replace(/^\.sendvoice\s*/i, '').trim()
+  if (!cleanedPayload) return null
+
+  // Match phone number (optional +, digits, spaces, hyphens, parentheses - min 7 chars)
+  const match = cleanedPayload.match(/^(\+?[\d\s\-\(\)]{7,22})\s+(.*)$/)
+  if (!match) return null
+
+  const rawPhone = match[1].trim()
+  let cleanDigits = rawPhone.replace(/\D/g, '')
+  if (!cleanDigits) return null
+
+  // Local Pakistani 11-digit number starting with 03 (e.g. 03001234567) -> 923001234567
+  if (cleanDigits.length === 11 && cleanDigits.startsWith('03')) {
+    cleanDigits = '92' + cleanDigits.slice(1)
+  }
+
+  const restText = match[2].trim()
+  if (!restText) return null
+
+  const restParts = restText.split(/\s+/).filter(Boolean)
+  const { voiceIndex, textToSpeak } = parseVoiceIndexAndText(restParts)
+
+  return {
+    phone: rawPhone,
+    cleanPhone: cleanDigits,
+    textToSpeak,
+    voiceIndex
+  }
+}
+
 export function helpText(prefix = '.') {
   return [
-    '*🤖 BOT_404 MENU*',
+    '*🤖 ANDY\'S BOT MENU*',
     '',
     `*${prefix}help* - Show this menu`, `*Usage: ${prefix}help*`, '',
+    `*${prefix}start-auto* - Turn AI auto-reply assistant ON (owner only)`, `*Usage: ${prefix}start-auto*`, '',
+    `*${prefix}stop-auto* - Turn AI auto-reply assistant OFF (owner only)`, `*Usage: ${prefix}stop-auto*`, '',
+    `*${prefix}sendvoice* - Send voice note to contact (owner only)`, `*Usage: ${prefix}sendvoice <phone_number> <text> [voice_index]*`, '',
     `*${prefix}vv* - Recover a quoted view-once media`, `*Usage: reply to view-once msg with ${prefix}vv*`, '',
     `*${prefix}hack* - Run a fictional hacker prank`, `*Usage: reply to a message with ${prefix}hack*`, '',
     `*${prefix}antidelete* - Toggle anti-delete (owner only)`, `*Usage: ${prefix}antidelete on/off*`, '',

@@ -18,7 +18,7 @@ export function startDashboard(repo: MessageRepository) {
     try {
       if (req.method === 'GET' && req.url === '/api/status') {
         const files = await fs.readdir(mediaDir).catch(() => [])
-        const body = { ok: true, service: 'BOT_404', mediaFiles: files.length, dashboard: 'localhost-only' }
+        const body = { ok: true, service: "Andy's Bot", mediaFiles: files.length, dashboard: 'localhost-only' }
         res.writeHead(200, { 'content-type': 'application/json' }); res.end(JSON.stringify(body)); return
       }
       if (req.method === 'POST' && req.url === '/api/trusted') {

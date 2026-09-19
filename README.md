@@ -186,7 +186,7 @@ npm start
 | `SELF_PREFIX` | `!!` | Command prefix reserved for bot owner. |
 | `API_BASE_URL` | `http://127.0.0.1:3000` | Base URL for self-hosted API backend adapters. |
 | `SESSION_DIR` | `./auth_info_baileys` | Directory for storing WhatsApp session state. |
-| `SIGNATURE` | `> BOT_404` | Footer appended to outgoing bot messages. |
+| `SIGNATURE` | `> Andy's Bot` | Footer appended to outgoing bot messages. |
 | `MAX_CONCURRENT` | `5` | Maximum parallel command execution instances. |
 | `LOG_LEVEL` | `info` | Logging verbosity (`debug`, `info`, `warn`, `error`). |
 | `DOWNLOAD_MAX_MB` | `50` | Maximum allowed media download size in megabytes. |

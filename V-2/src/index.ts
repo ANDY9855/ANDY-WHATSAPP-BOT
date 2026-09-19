@@ -10,7 +10,7 @@ let dashboard: ReturnType<typeof startDashboard> | undefined
 
 async function main() {
   await repo.ping()
-  health = startHealthServer(async () => { await repo.ping(); return { ok: true, service: 'BOT_404', database: 'up', timestamp: new Date().toISOString() } })
+  health = startHealthServer(async () => { await repo.ping(); return { ok: true, service: "Andy's Bot", database: 'up', timestamp: new Date().toISOString() } })
   dashboard = startDashboard(repo)
   const days = Number(process.env.MESSAGE_RETENTION_DAYS ?? 30)
   await repo.cleanup(Number.isFinite(days) && days > 0 ? days : 30)

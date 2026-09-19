@@ -15,5 +15,5 @@ test('formats Telenor quiz as answers instead of JSON', () => {
 })
 
 test('formats generic API errors cleanly', () => {
-  assert.equal(formatApiResult({ success: false, error: 'Bad request' }, 'API'), '*🤖 BOT_404 — ERROR*\n\nBad request')
+  assert.equal(formatApiResult({ success: false, error: 'Bad request' }, 'API'), "*🤖 Andy's Bot — ERROR*\n\nBad request")
 })

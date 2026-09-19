@@ -1,6 +1,6 @@
-# BOT_404 — WhatsApp Bot
+# Andy's Bot — WhatsApp Bot
 
-A local Node.js/TypeScript WhatsApp automation bot named **BOT_404**, using Baileys and MariaDB from XAMPP. It implements always-on anti-delete capture, quoted view-once recovery with `.vv`, owner forwarding to `OWNER_NUMBER`, and a catalog-wide configurable API adapter layer.
+A local Node.js/TypeScript WhatsApp automation bot named **Andy's Bot**, using Baileys and MariaDB from XAMPP. It implements always-on anti-delete capture, quoted view-once recovery with `.vv`, owner forwarding to `OWNER_NUMBER`, owner-only prefix command locking, smart AI auto-reply with 10s read-cancellation timer, TTS voice generation (`ur-PK-UzmaNeural`), and a catalog-wide API adapter layer.
 
 ## Important operational note
 
