@@ -3,6 +3,7 @@ import { MessageRepository } from './db.js'
 import { startBot } from './whatsapp.js'
 import { logEvent, startHealthServer } from './ops.js'
 import { startDashboard } from './dashboard.js'
+import { getAvailableFlashModels } from './gemini.js'
 
 const repo = new MessageRepository()
 let health: ReturnType<typeof startHealthServer> | undefined
@@ -10,6 +11,8 @@ let dashboard: ReturnType<typeof startDashboard> | undefined
 
 async function main() {
   await repo.ping()
+  const activeModels = await getAvailableFlashModels()
+  console.log(`[Startup] Gemini Flash Models initialized (${activeModels.length}):`, JSON.stringify(activeModels))
   health = startHealthServer(async () => { await repo.ping(); return { ok: true, service: "Andy's Bot", database: 'up', timestamp: new Date().toISOString() } })
   dashboard = startDashboard(repo)
   const days = Number(process.env.MESSAGE_RETENTION_DAYS ?? 30)

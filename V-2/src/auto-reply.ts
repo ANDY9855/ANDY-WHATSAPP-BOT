@@ -1,6 +1,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import type { MessageRepository, StoredMessage } from './db.js'
+import { getGeminiKeys, getAvailableFlashModels } from './gemini.js'
 
 // Use process.cwd() so paths remain consistent in both src/ and dist/
 const dataDir = path.resolve(process.cwd(), 'data')
@@ -87,14 +88,6 @@ export function isExcludedContact(jid: string): boolean {
   return match
 }
 
-function getGeminiKeys(): string[] {
-  const matchingEnvNames = Object.keys(process.env).filter(k => /^GEMINI_API_KEY(_\d+)?$/i.test(k))
-  const envKeys = matchingEnvNames.map(k => process.env[k])
-  const rawList = envKeys.flatMap(k => (k ? k.split(',') : [])).map(k => k.trim()).filter(Boolean)
-  // Deduplicate keys to avoid redundant loops
-  return Array.from(new Set(rawList))
-}
-
 export async function callGeminiApi(systemPrompt: string, userMessage: string, contextMessages: StoredMessage[] = []): Promise<string | null> {
   const keys = getGeminiKeys()
   if (keys.length === 0) {
@@ -102,7 +95,7 @@ export async function callGeminiApi(systemPrompt: string, userMessage: string, c
     return null
   }
 
-  const models = ['gemini-2.0-flash', 'gemini-3.6-flash', 'gemini-1.5-flash']
+  const models = await getAvailableFlashModels(keys[0])
 
   const historyParts = contextMessages.map(msg => ({
     role: msg.senderJid.includes(process.env.OWNER_NUMBER ?? '923333425155') ? 'model' : 'user',
@@ -169,7 +162,7 @@ export async function transcribeAudioWithGemini(audioBuffer: Buffer, rawMimeType
 
   const prompt = 'Transcribe this audio/voice note accurately into text. Automatically detect the language (English, Roman Urdu, or Urdu). Return ONLY the verbatim transcribed text with no intro, explanation, or extra formatting.'
 
-  const models = ['gemini-2.0-flash', 'gemini-1.5-flash']
+  const models = await getAvailableFlashModels(keys[0])
 
   let lastError = 'All Gemini API keys & models failed or exhausted quota (429).'
 

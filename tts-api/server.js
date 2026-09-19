@@ -25,6 +25,69 @@ app.use(express.json({ limit: '1mb' }));
  * - Returns ONLY corrected Urdu text
  * - Gracefully falls back to original text if Gemini API is unavailable/fails
  */
+let cachedFlashModels = null;
+let cacheTimestamp = 0;
+
+async function getAvailableFlashModels(apiKey) {
+  const now = Date.now();
+  if (cachedFlashModels && (now - cacheTimestamp) < 3600000) {
+    return cachedFlashModels;
+  }
+
+  const fallback = ['gemini-3.6-flash'];
+  if (!apiKey) return fallback;
+
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 8000);
+    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`, { signal: controller.signal });
+    clearTimeout(timeoutId);
+
+    if (!res.ok) {
+      cachedFlashModels = fallback;
+      cacheTimestamp = now;
+      return fallback;
+    }
+
+    const data = await res.json();
+    if (!Array.isArray(data.models)) {
+      cachedFlashModels = fallback;
+      cacheTimestamp = now;
+      return fallback;
+    }
+
+    const flashModels = data.models
+      .filter(m => {
+        const methods = m.supportedGenerationMethods || [];
+        const name = (m.name || '').toLowerCase();
+        return methods.includes('generateContent') && name.includes('flash') && !/-image|-tts|-computer-use|-robotics/i.test(name);
+      })
+      .map(m => m.name.replace(/^models\//, ''));
+
+    const unique = Array.from(new Set(flashModels));
+    if (unique.length === 0) {
+      cachedFlashModels = fallback;
+      cacheTimestamp = now;
+      return fallback;
+    }
+
+    if (!unique.includes('gemini-3.6-flash')) {
+      unique.unshift('gemini-3.6-flash');
+    } else {
+      unique.sort((a, b) => (a === 'gemini-3.6-flash' ? -1 : b === 'gemini-3.6-flash' ? 1 : 0));
+    }
+
+    cachedFlashModels = unique;
+    cacheTimestamp = now;
+    console.log(`[TTS_API Gemini] Resolved active Flash models (${cachedFlashModels.length}):`, JSON.stringify(cachedFlashModels));
+    return cachedFlashModels;
+  } catch (err) {
+    cachedFlashModels = fallback;
+    cacheTimestamp = now;
+    return fallback;
+  }
+}
+
 async function preprocessTextWithGemini(inputText) {
   const matchingKeys = Object.keys(process.env).filter(k => /^GEMINI_API_KEY(_\d+)?$/i.test(k));
   const rawList = matchingKeys.map(k => process.env[k]).flatMap(k => (k ? k.split(',') : [])).map(k => k.trim()).filter(Boolean);
@@ -36,7 +99,7 @@ async function preprocessTextWithGemini(inputText) {
   }
 
   const prompt = "If this text is Roman Urdu (Urdu written in English letters), convert it to proper Urdu script and fix spelling/grammar. If this text is already in English or another language, leave it completely unchanged except for obvious typo fixes. Return ONLY the resulting text with no explanation or extra formatting.";
-  const models = ['gemini-2.0-flash', 'gemini-3.6-flash', 'gemini-1.5-flash'];
+  const models = await getAvailableFlashModels(keys[0]);
 
   for (const key of keys) {
     for (const model of models) {

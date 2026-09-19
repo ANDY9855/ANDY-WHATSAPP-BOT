@@ -1,11 +1,5 @@
 import type { MessageRepository, StoredMessage } from './db.js'
-
-function getGeminiKeys(): string[] {
-  const matchingEnvNames = Object.keys(process.env).filter(k => /^GEMINI_API_KEY(_\d+)?$/i.test(k))
-  const envKeys = matchingEnvNames.map(k => process.env[k])
-  const rawList = envKeys.flatMap(k => (k ? k.split(',') : [])).map(k => k.trim()).filter(Boolean)
-  return Array.from(new Set(rawList))
-}
+import { getGeminiKeys, getAvailableFlashModels } from './gemini.js'
 
 export type ImportanceAnalysis = {
   isImportant: boolean
@@ -34,7 +28,7 @@ Return strictly valid JSON with no markdown block markers:
   "reason": "1 sentence explanation of why this was flagged as important/urgent"
 }`
 
-  const models = ['gemini-2.0-flash', 'gemini-3.6-flash', 'gemini-1.5-flash']
+  const models = await getAvailableFlashModels(keys[0])
 
   for (const key of keys) {
     for (const model of models) {
