@@ -75,7 +75,17 @@ async function sendWithRetry(sock: any, jid: string, content: any, attempts = 4)
   }
 }
 
-async function saveIncoming(repo: MessageRepository, m: any): Promise<StoredMessage> {
+function isStatusJid(jid?: string): boolean {
+  if (!jid) return false
+  return jid === 'status@broadcast' || jid.endsWith('@status.whatsapp.net')
+}
+
+async function saveIncoming(repo: MessageRepository, m: any): Promise<StoredMessage | null> {
+  const chatJid = m.key?.remoteJid
+  if (isStatusJid(chatJid)) {
+    // Skip storing status updates (stories) to save disk storage
+    return null
+  }
   const content = unwrapMessage(m.message) ?? {}
   const info = mediaInfo(content)
   let mediaPath: string | undefined
@@ -108,18 +118,26 @@ async function saveIncoming(repo: MessageRepository, m: any): Promise<StoredMess
 async function forwardRevoked(sock: any, repo: MessageRepository, revoke: any) {
   const id = revoke.key?.id
   if (!id) return
+  if (isStatusJid(revoke.key?.remoteJid)) {
+    console.log(`[AntiDelete] Ignored deleted WhatsApp status update (ID: ${id})`)
+    return
+  }
   const previous = await repo.findMessage(id)
   await repo.markRevoked(id)
   if (!previous) return
+  if (isStatusJid(previous.chatJid) || isStatusJid(previous.senderJid)) {
+    console.log(`[AntiDelete] Ignored deleted WhatsApp status update (ID: ${id})`)
+    return
+  }
   const header = `⚠️ *Deleted message recovered*\nChat: ${previous.chatJid}\nSender: ${previous.senderJid}\nOriginal ID: ${id}`
-  await sendWithRetry(sock,`${ownerNumber}@s.whatsapp.net`, { text: header })
+  await sendWithRetry(sock, `${ownerNumber}@s.whatsapp.net`, { text: header })
   if (previous.mediaPath && previous.mediaMimetype) {
     const bytes = await fs.readFile(previous.mediaPath)
     const type = previous.messageType
     const payload = type === 'image' ? { image: bytes } : type === 'video' ? { video: bytes } : type === 'audio' ? { audio: bytes, ptt: false } : { document: bytes, fileName: previous.mediaFilename ?? 'recovered-file' }
-    await sendWithRetry(sock,`${ownerNumber}@s.whatsapp.net`, { ...payload, mimetype: previous.mediaMimetype, caption: previous.caption ?? 'Recovered attachment' })
+    await sendWithRetry(sock, `${ownerNumber}@s.whatsapp.net`, { ...payload, mimetype: previous.mediaMimetype, caption: previous.caption ?? 'Recovered attachment' })
   } else if (previous.textBody) {
-    await sendWithRetry(sock,`${ownerNumber}@s.whatsapp.net`, { text: `Deleted text:\n${previous.textBody}` })
+    await sendWithRetry(sock, `${ownerNumber}@s.whatsapp.net`, { text: `Deleted text:\n${previous.textBody}` })
   }
 }
 
