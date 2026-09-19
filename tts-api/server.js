@@ -26,13 +26,9 @@ app.use(express.json({ limit: '1mb' }));
  * - Gracefully falls back to original text if Gemini API is unavailable/fails
  */
 async function preprocessTextWithGemini(inputText) {
-  const keys = [
-    process.env.GEMINI_API_KEY,
-    process.env.GEMINI_API_KEY_2,
-    process.env.GEMINI_API_KEY_3,
-    process.env.GEMINI_API_KEY_4,
-    process.env.GEMINI_API_KEY_5
-  ].flatMap(k => (k ? k.split(',') : [])).map(k => k.trim()).filter(Boolean);
+  const matchingKeys = Object.keys(process.env).filter(k => /^GEMINI_API_KEY(_\d+)?$/i.test(k));
+  const rawList = matchingKeys.map(k => process.env[k]).flatMap(k => (k ? k.split(',') : [])).map(k => k.trim()).filter(Boolean);
+  const keys = Array.from(new Set(rawList));
 
   if (keys.length === 0) {
     console.log('[TTS_API Gemini] No GEMINI_API_KEY configured, skipping preprocessing.');

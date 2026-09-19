@@ -88,13 +88,8 @@ export function isExcludedContact(jid: string): boolean {
 }
 
 function getGeminiKeys(): string[] {
-  const envKeys = [
-    process.env.GEMINI_API_KEY,
-    process.env.GEMINI_API_KEY_2,
-    process.env.GEMINI_API_KEY_3,
-    process.env.GEMINI_API_KEY_4,
-    process.env.GEMINI_API_KEY_5
-  ]
+  const matchingEnvNames = Object.keys(process.env).filter(k => /^GEMINI_API_KEY(_\d+)?$/i.test(k))
+  const envKeys = matchingEnvNames.map(k => process.env[k])
   const rawList = envKeys.flatMap(k => (k ? k.split(',') : [])).map(k => k.trim()).filter(Boolean)
   // Deduplicate keys to avoid redundant loops
   return Array.from(new Set(rawList))
