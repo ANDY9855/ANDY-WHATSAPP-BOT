@@ -10,6 +10,7 @@ test('parses dot commands case-insensitively', () => {
   assert.deepEqual(parseCommand('.start-auto'), { name: 'start-auto', args: [], raw: '.start-auto' })
   assert.deepEqual(parseCommand('.stop-auto'), { name: 'stop-auto', args: [], raw: '.stop-auto' })
   assert.deepEqual(parseCommand('.sendvoice 923001234567 Hello 314'), { name: 'sendvoice', args: ['923001234567', 'Hello', '314'], raw: '.sendvoice 923001234567 Hello 314' })
+  assert.deepEqual(parseCommand('.trans'), { name: 'trans', args: [], raw: '.trans' })
 })
 
 test('parses sendvoice args across various phone number formats', () => {

@@ -158,6 +158,77 @@ export async function callGeminiApi(systemPrompt: string, userMessage: string, c
   return null
 }
 
+export async function transcribeAudioWithGemini(audioBuffer: Buffer, rawMimeType: string): Promise<string> {
+  const keys = getGeminiKeys()
+  if (keys.length === 0) {
+    throw new Error('No GEMINI_API_KEY configured in environment.')
+  }
+
+  const cleanMime = (rawMimeType || 'audio/ogg').split(';')[0].trim()
+  const base64Audio = audioBuffer.toString('base64')
+
+  const prompt = 'Transcribe this audio/voice note accurately into text. Automatically detect the language (English, Roman Urdu, or Urdu). Return ONLY the verbatim transcribed text with no intro, explanation, or extra formatting.'
+
+  const models = ['gemini-2.0-flash', 'gemini-1.5-flash']
+
+  let lastError = 'All Gemini API keys & models failed or exhausted quota (429).'
+
+  for (let keyIdx = 0; keyIdx < keys.length; keyIdx++) {
+    const key = keys[keyIdx]
+    for (const model of models) {
+      try {
+        console.log(`[Transcribe Gemini] Attempting call with key #${keyIdx + 1} and model ${model}...`)
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${key}`
+        const controller = new AbortController()
+        const timeoutId = setTimeout(() => controller.abort(), 15000)
+
+        const response = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          signal: controller.signal,
+          body: JSON.stringify({
+            contents: [
+              {
+                role: 'user',
+                parts: [
+                  { text: prompt },
+                  {
+                    inlineData: {
+                      mimeType: cleanMime,
+                      data: base64Audio
+                    }
+                  }
+                ]
+              }
+            ]
+          })
+        })
+
+        clearTimeout(timeoutId)
+
+        if (!response.ok) {
+          const errText = await response.text()
+          console.warn(`[Transcribe Gemini] Warning (${model}, key #${keyIdx + 1}, status ${response.status}): ${errText.slice(0, 100)}`)
+          lastError = `HTTP ${response.status}: ${errText.slice(0, 100)}`
+          continue
+        }
+
+        const data: any = await response.json()
+        const replyText = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim()
+        if (replyText) {
+          console.log(`[Transcribe Gemini] Success (${model}, key #${keyIdx + 1})! Transcribed ${replyText.length} chars.`)
+          return replyText
+        }
+      } catch (err: any) {
+        console.warn(`[Transcribe Gemini] Error calling ${model} with key #${keyIdx + 1}:`, err.message)
+        lastError = err.message
+      }
+    }
+  }
+
+  throw new Error(lastError)
+}
+
 export async function generateAutoReply(
   chatJid: string,
   incomingText: string,

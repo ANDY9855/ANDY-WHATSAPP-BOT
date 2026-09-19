@@ -80,6 +80,7 @@ export function helpText(prefix = '.') {
     `*${prefix}start-auto* - Turn AI auto-reply assistant ON (owner only)`, `*Usage: ${prefix}start-auto*`, '',
     `*${prefix}stop-auto* - Turn AI auto-reply assistant OFF (owner only)`, `*Usage: ${prefix}stop-auto*`, '',
     `*${prefix}sendvoice* - Send voice note to contact (owner only)`, `*Usage: ${prefix}sendvoice <phone_number> <text> [voice_index]*`, '',
+    `*${prefix}trans* - Transcribe voice message to text (owner only)`, `*Usage: reply to voice msg with ${prefix}trans*`, '',
     `*${prefix}vv* - Recover a quoted view-once media`, `*Usage: reply to view-once msg with ${prefix}vv*`, '',
     `*${prefix}hack* - Run a fictional hacker prank`, `*Usage: reply to a message with ${prefix}hack*`, '',
     `*${prefix}antidelete* - Toggle anti-delete (owner only)`, `*Usage: ${prefix}antidelete on/off*`, '',

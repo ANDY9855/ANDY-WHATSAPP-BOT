@@ -14,7 +14,7 @@ import { allowCommand, logEvent } from './ops.js'
 import { answerQuiz, beginQuiz, hasQuiz, parseOption } from './quiz.js'
 import { formatApiResult } from './format.js'
 import { sendHackPrank } from './hack.js'
-import { cancelPendingAutoReply, scheduleAutoReply, isAutoReplyEnabled, setAutoReplyEnabled, isBotMessageId } from './auto-reply.js'
+import { cancelPendingAutoReply, scheduleAutoReply, isAutoReplyEnabled, setAutoReplyEnabled, isBotMessageId, transcribeAudioWithGemini } from './auto-reply.js'
 import { notifyAndyIfImportant } from './importance.js'
 
 const ownerNumber = (process.env.OWNER_NUMBER ?? '923333425155').replace(/\D/g, '')
@@ -329,6 +329,29 @@ export async function startBot(repo = new MessageRepository()) {
           const quoted = quotedMessage(m)
           if (!quoted) await sendWithRetry(sock, jid, { text: `Reply to a view-once image, video, audio, or document with ${prefix}vv.` })
           else await sendViewOnce(sock, jid, quoted)
+        } else if (command.name === 'trans') {
+          const quoted = quotedMessage(m)
+          if (!quoted) {
+            await sendWithRetry(sock, jid, { text: 'Reply to a voice message with .trans to transcribe it.' })
+            continue
+          }
+          const content = unwrapMessage(quoted)
+          const info = mediaInfo(content)
+          if (!info || info.type !== 'audio') {
+            await sendWithRetry(sock, jid, { text: 'Reply to a voice message with .trans to transcribe it.' })
+            continue
+          }
+
+          try {
+            console.log(`[Transcribe Command] Downloading voice note audio for message ID ${quoted.key?.id ?? 'quoted'}...`)
+            const bytes = await downloadMedia(info.payload, info.type)
+            console.log(`[Transcribe Command] Audio downloaded (${(bytes.length / 1024).toFixed(1)} KB, mime: ${info.mime}). Transcribing via Gemini...`)
+            const text = await transcribeAudioWithGemini(bytes, info.mime)
+            await sendWithRetry(sock, jid, { text: `🎙️ *Andy's Bot — VOICE TRANSCRIBED*\n\n${text}` })
+          } catch (err: any) {
+            console.error('[Transcribe Command] Failed:', err.message)
+            await sendWithRetry(sock, jid, { text: `❌ *Andy's Bot — TRANSCRIPTION FAILED*\n\n${err.message || 'Could not transcribe voice message.'}` })
+          }
         } else if (command.name === 'antidelete') {
           await sendWithRetry(sock, jid, { text: 'Anti-delete is always active in this build.' })
         } else if (command.name === 'tts') {
